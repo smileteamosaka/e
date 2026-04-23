@@ -1,0 +1,289 @@
+import { useState, useRef, useEffect, useCallback } from "react";
+
+const ROWS = 20;
+const COLS = 10;
+const COL_LABELS = Array.from({ length: COLS }, (_, i) => String.fromCharCode(65 + i));
+
+const initData = () => Array.from({ length: ROWS }, () => Array(COLS).fill(""));
+
+function evalFormula(formula, data) {
+  try {
+    let expr = formula.slice(1).toUpperCase();
+    expr = expr.replace(/SUM\(([A-J])(\d+):([A-J])(\d+)\)/g, (_, c1, r1, c2, r2) => {
+      let sum = 0;
+      for (let r = parseInt(r1) - 1; r <= parseInt(r2) - 1; r++)
+        for (let c = c1.charCodeAt(0) - 65; c <= c2.charCodeAt(0) - 65; c++)
+          sum += parseFloat(data[r]?.[c] || 0);
+      return sum;
+    });
+    expr = expr.replace(/AVERAGE\(([A-J])(\d+):([A-J])(\d+)\)/g, (_, c1, r1, c2, r2) => {
+      let sum = 0, count = 0;
+      for (let r = parseInt(r1) - 1; r <= parseInt(r2) - 1; r++)
+        for (let c = c1.charCodeAt(0) - 65; c <= c2.charCodeAt(0) - 65; c++) {
+          sum += parseFloat(data[r]?.[c] || 0); count++;
+        }
+      return count ? sum / count : 0;
+    });
+    expr = expr.replace(/([A-J])(\d+)/g, (_, col, row) =>
+      parseFloat(data[parseInt(row) - 1]?.[col.charCodeAt(0) - 65] || 0)
+    );
+    // eslint-disable-next-line no-new-func
+    return Function('"use strict"; return (' + expr + ')')();
+  } catch { return "#ERR"; }
+}
+
+export default function Spreadsheet() {
+  const [data, setData] = useState(initData);
+  const [selected, setSelected] = useState({ r: 0, c: 0 });
+  const [editing, setEditing] = useState(false);
+  const [editVal, setEditVal] = useState("");
+  const inputRef = useRef(null);
+
+  const getCellDisplay = useCallback((r, c) => {
+    const v = data[r][c];
+    if (typeof v === "string" && v.startsWith("=")) return evalFormula(v, data);
+    return v;
+  }, [data]);
+
+  const startEdit = (r, c) => { setSelected({ r, c }); setEditing(true); setEditVal(data[r][c]); };
+
+  const commitEdit = useCallback(() => {
+    const { r, c } = selected;
+    setData(prev => { const next = prev.map(row => [...row]); next[r][c] = editVal; return next; });
+    setEditing(false);
+  }, [selected, editVal]);
+
+  const moveSelection = (dr, dc) =>
+    setSelected(prev => ({
+      r: Math.max(0, Math.min(ROWS - 1, prev.r + dr)),
+      c: Math.max(0, Math.min(COLS - 1, prev.c + dc)),
+    }));
+
+  const handleKeyDown = (e) => {
+    if (editing) {
+      if (e.key === "Enter") { commitEdit(); moveSelection(1, 0); }
+      else if (e.key === "Escape") { setEditing(false); setEditVal(""); }
+      else if (e.key === "Tab") { e.preventDefault(); commitEdit(); moveSelection(0, 1); }
+      return;
+    }
+    const moves = { ArrowUp: [-1,0], ArrowDown: [1,0], ArrowLeft: [0,-1], ArrowRight: [0,1] };
+    if (moves[e.key]) { e.preventDefault(); moveSelection(...moves[e.key]); }
+    else if (e.key === "Enter" || e.key === "F2") startEdit(selected.r, selected.c);
+    else if (e.key === "Delete" || e.key === "Backspace") {
+      setData(prev => { const next = prev.map(r => [...r]); next[selected.r][selected.c] = ""; return next; });
+    } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+      setEditing(true); setEditVal(e.key);
+    }
+  };
+
+  useEffect(() => { if (editing && inputRef.current) inputRef.current.focus(); }, [editing, selected]);
+
+  const cellRef = `${COL_LABELS[selected.c]}${selected.r + 1}`;
+  const currentVal = data[selected.r][selected.c];
+
+  return (
+    <div
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      style={{
+        fontFamily: "'Segoe UI', 'Noto Sans JP', sans-serif",
+        background: "#f0f4f8",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        outline: "none",
+        color: "#1a1a2e",
+      }}
+    >
+      {/* Header */}
+      <div style={{
+        background: "#2563eb",
+        padding: "10px 20px",
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+        boxShadow: "0 2px 8px rgba(37,99,235,0.3)",
+      }}>
+        <span style={{ fontSize: 20, color: "white" }}>📊</span>
+        <span style={{ color: "white", fontWeight: 700, fontSize: 16, letterSpacing: 1 }}>
+         miyusheet
+        </span>
+      </div>
+
+      {/* Formula Bar */}
+      <div style={{
+        background: "white",
+        borderBottom: "2px solid #dbeafe",
+        padding: "6px 16px",
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+      }}>
+        <div style={{
+          background: "#eff6ff",
+          border: "1.5px solid #93c5fd",
+          borderRadius: 6,
+          padding: "4px 12px",
+          fontSize: 13,
+          fontWeight: 700,
+          color: "#2563eb",
+          minWidth: 44,
+          textAlign: "center",
+        }}>
+          {cellRef}
+        </div>
+        <span style={{ color: "#93c5fd", fontSize: 16, fontStyle: "italic", fontWeight: 700 }}>fx</span>
+        <div style={{
+          background: "#f8fafc",
+          border: "1.5px solid #cbd5e1",
+          borderRadius: 6,
+          padding: "4px 12px",
+          fontSize: 13,
+          color: "#334155",
+          flex: 1,
+          minWidth: 200,
+          minHeight: 28,
+        }}>
+          {currentVal || <span style={{ color: "#cbd5e1" }}>セルの内容</span>}
+        </div>
+        <span style={{ fontSize: 11, color: "#94a3b8", whiteSpace: "nowrap" }}>
+          ↑↓←→ 移動 ｜ Enter 編集 ｜ Del 削除
+        </span>
+      </div>
+
+      {/* Table */}
+      <div style={{ overflow: "auto", flex: 1, padding: "12px 16px" }}>
+        <div style={{
+          background: "white",
+          borderRadius: 10,
+          boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+          overflow: "hidden",
+          border: "1.5px solid #e2e8f0",
+        }}>
+          <table style={{ borderCollapse: "collapse", tableLayout: "fixed", width: "100%", fontSize: 13 }}>
+            <thead>
+              <tr>
+                <th style={{
+                  width: 44, minWidth: 44,
+                  background: "#f1f5f9",
+                  borderBottom: "2px solid #e2e8f0",
+                  borderRight: "1.5px solid #e2e8f0",
+                  padding: "7px 4px",
+                  position: "sticky", top: 0, left: 0, zIndex: 3,
+                }} />
+                {COL_LABELS.map((label, c) => (
+                  <th key={c} style={{
+                    width: 100,
+                    background: selected.c === c ? "#dbeafe" : "#f1f5f9",
+                    borderBottom: "2px solid #e2e8f0",
+                    borderRight: "1px solid #e2e8f0",
+                    padding: "7px 8px",
+                    color: selected.c === c ? "#2563eb" : "#64748b",
+                    fontWeight: 600,
+                    fontSize: 12,
+                    position: "sticky", top: 0, zIndex: 2,
+                    textAlign: "center",
+                    transition: "all 0.12s",
+                  }}>
+                    {label}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: ROWS }, (_, r) => (
+                <tr key={r}>
+                  <td style={{
+                    background: selected.r === r ? "#dbeafe" : (r % 2 === 0 ? "#f8fafc" : "#f1f5f9"),
+                    borderBottom: "1px solid #e2e8f0",
+                    borderRight: "1.5px solid #e2e8f0",
+                    padding: "5px 8px",
+                    color: selected.r === r ? "#2563eb" : "#94a3b8",
+                    fontWeight: 600,
+                    textAlign: "center",
+                    position: "sticky", left: 0, zIndex: 1,
+                    fontSize: 11,
+                    transition: "all 0.12s",
+                  }}>
+                    {r + 1}
+                  </td>
+                  {Array.from({ length: COLS }, (_, c) => {
+                    const isSelected = selected.r === r && selected.c === c;
+                    const isEditing = isSelected && editing;
+                    const display = getCellDisplay(r, c);
+                    return (
+                      <td
+                        key={c}
+                        onClick={() => { setEditing(false); setSelected({ r, c }); }}
+                        onDoubleClick={() => startEdit(r, c)}
+                        style={{
+                          border: isSelected ? "2px solid #2563eb" : "1px solid #e2e8f0",
+                          padding: 0,
+                          background: isSelected ? "#eff6ff" : r % 2 === 0 ? "white" : "#f8fafc",
+                          cursor: "default",
+                          transition: "background 0.1s",
+                        }}
+                      >
+                        {isEditing ? (
+                          <input
+                            ref={inputRef}
+                            value={editVal}
+                            onChange={e => setEditVal(e.target.value)}
+                            onBlur={commitEdit}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              minHeight: 28,
+                              background: "#eff6ff",
+                              border: "none",
+                              outline: "none",
+                              color: "#1e3a5f",
+                              fontFamily: "inherit",
+                              fontSize: 13,
+                              padding: "4px 8px",
+                              boxSizing: "border-box",
+                            }}
+                          />
+                        ) : (
+                          <div style={{
+                            padding: "4px 8px",
+                            minHeight: 28,
+                            overflow: "hidden",
+                            whiteSpace: "nowrap",
+                            textOverflow: "ellipsis",
+                            color: display === "#ERR" ? "#ef4444"
+                              : typeof display === "number" ? "#0369a1"
+                              : "#1e293b",
+                            textAlign: typeof display === "number" ? "right" : "left",
+                          }}>
+                            {display === "" || display == null ? "\u00a0" : String(display)}
+                          </div>
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div style={{
+        background: "white",
+        borderTop: "1.5px solid #e2e8f0",
+        padding: "6px 20px",
+        fontSize: 11,
+        color: "#94a3b8",
+        display: "flex",
+        gap: 20,
+        alignItems: "center",
+      }}>
+        <span>💡 数式例: <b style={{color:"#2563eb"}}>=A1+B1</b> &nbsp;|&nbsp; <b style={{color:"#2563eb"}}>=SUM(A1:A5)</b> &nbsp;|&nbsp; <b style={{color:"#2563eb"}}>=AVERAGE(A1:A5)</b></span>
+        <span style={{ marginLeft: "auto" }}>{ROWS} 行 × {COLS} 列</span>
+      </div>
+    </div>
+  );
+}
