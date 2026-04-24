@@ -1,451 +1,67 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>miyuusheet</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', 'Noto Sans JP', sans-serif;
-      background: #f0f4f8;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      color: #1a1a2e;
-    }
-    #app {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      outline: none;
-    }
-    /* Header */
-    #header {
-      background: #2563eb;
-      padding: 10px 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      box-shadow: 0 2px 8px rgba(37,99,235,0.3);
-    }
-    #header span.icon { font-size: 20px; color: white; }
-    #header span.title { color: white; font-weight: 700; font-size: 16px; letter-spacing: 1px; }
-
-    /* Formula Bar */
-    #formula-bar {
-      background: white;
-      border-bottom: 2px solid #dbeafe;
-      padding: 6px 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-    }
-    #cell-ref {
-      background: #eff6ff;
-      border: 1.5px solid #93c5fd;
-      border-radius: 6px;
-      padding: 4px 12px;
-      font-size: 13px;
-      font-weight: 700;
-      color: #2563eb;
-      min-width: 52px;
-      text-align: center;
-    }
-    #fx-label {
-      color: #93c5fd;
-      font-size: 16px;
-      font-style: italic;
-      font-weight: 700;
-    }
-    #formula-display {
-      background: #f8fafc;
-      border: 1.5px solid #cbd5e1;
-      border-radius: 6px;
-      padding: 4px 12px;
-      font-size: 13px;
-      color: #334155;
-      flex: 1;
-      min-width: 200px;
-      min-height: 28px;
-      line-height: 20px;
-    }
-    #formula-display.empty { color: #cbd5e1; }
-    #shortcut-hint {
-      font-size: 11px;
-      color: #94a3b8;
-      white-space: nowrap;
-    }
-
-    /* Table container */
-    #table-wrap {
-      overflow: auto;
-      flex: 1;
-      padding: 12px 16px;
-    }
-    #table-inner {
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-      overflow: hidden;
-      border: 1.5px solid #e2e8f0;
-    }
-    table {
-      border-collapse: collapse;
-      table-layout: fixed;
-      font-size: 13px;
-    }
-    /* Corner + row headers */
-    th.corner {
-      width: 44px; min-width: 44px;
-      background: #f1f5f9;
-      border-bottom: 2px solid #e2e8f0;
-      border-right: 1.5px solid #e2e8f0;
-      padding: 7px 4px;
-      position: sticky; top: 0; left: 0; z-index: 3;
-    }
-    th.col-header {
-      width: 100px;
-      background: #f1f5f9;
-      border-bottom: 2px solid #e2e8f0;
-      border-right: 1px solid #e2e8f0;
-      padding: 7px 8px;
-      color: #64748b;
-      font-weight: 600;
-      font-size: 12px;
-      position: sticky; top: 0; z-index: 2;
-      text-align: center;
-      transition: all 0.12s;
-    }
-    th.col-header.active {
-      background: #dbeafe;
-      color: #2563eb;
-    }
-    td.row-header {
-      background: #f8fafc;
-      border-bottom: 1px solid #e2e8f0;
-      border-right: 1.5px solid #e2e8f0;
-      padding: 5px 8px;
-      color: #94a3b8;
-      font-weight: 600;
-      text-align: center;
-      position: sticky; left: 0; z-index: 1;
-      font-size: 11px;
-      transition: all 0.12s;
-      min-width: 44px;
-    }
-    td.row-header.active { background: #dbeafe; color: #2563eb; }
-    td.row-header.odd { background: #f1f5f9; }
-    td.row-header.odd.active { background: #dbeafe; }
-
-    /* Data cells */
-    td.cell {
-      border: 1px solid #e2e8f0;
-      padding: 0;
-      background: white;
-      cursor: default;
-      transition: background 0.1s;
-    }
-    td.cell.odd { background: #f8fafc; }
-    td.cell.selected {
-      border: 2px solid #2563eb !important;
-      background: #eff6ff !important;
-    }
-    .cell-content {
-      padding: 4px 8px;
-      min-height: 28px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      color: #1e293b;
-      line-height: 20px;
-    }
-    .cell-content.number { color: #0369a1; text-align: right; }
-    .cell-content.error { color: #ef4444; }
-    .cell-input {
-      width: 100%;
-      height: 100%;
-      min-height: 28px;
-      background: #eff6ff;
-      border: none;
-      outline: none;
-      color: #1e3a5f;
-      font-family: inherit;
-      font-size: 13px;
-      padding: 4px 8px;
-      box-sizing: border-box;
-      display: block;
-    }
-
-    /* Footer */
-    #footer {
-      background: white;
-      border-top: 1.5px solid #e2e8f0;
-      padding: 6px 20px;
-      font-size: 11px;
-      color: #94a3b8;
-      display: flex;
-      gap: 20px;
-      align-items: center;
-    }
-    #footer b { color: #2563eb; }
-    #footer #row-col-count { margin-left: auto; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spreadsheet App</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        table { border-collapse: collapse; }
+        td, th { border: 1px solid #ccc; padding: 5px; min-width: 50px; height: 25px; }
+        .selected { border: 2px solid #2563eb !important; background-color: #eff6ff; }
+    </style>
 </head>
 <body>
-<div id="app" tabindex="0">
-  <!-- Header -->
-  <div id="header">
-    <span class="icon">📊</span>
-    <span class="title">かんたんシート</span>
-  </div>
+    <div id="root"></div>
 
-  <!-- Formula Bar -->
-  <div id="formula-bar">
-    <div id="cell-ref">A1</div>
-    <span id="fx-label">fx</span>
-    <div id="formula-display" class="empty">セルの内容</div>
-    <span id="shortcut-hint">↑↓←→ 移動 ｜ Enter 編集 ｜ Del 削除</span>
-  </div>
+    <script type="text/babel">
+        const { useState, useRef, useEffect, useCallback } = React;
 
-  <!-- Table -->
-  <div id="table-wrap">
-    <div id="table-inner">
-      <table id="sheet"></table>
-    </div>
-  </div>
+        // --- ここから下に、あなたが書いた元のコードを貼り付けます ---
+        function Spreadsheet() {
+            const ROWS = 20;
+            const COLS = 10;
+            const COL_LABELS = Array.from({ length: COLS }, (_, i) => String.fromCharCode(65 + i));
+            const [data, setData] = useState(() => Array.from({ length: ROWS }, () => Array(COLS).fill("")));
+            const [selected, setSelected] = useState({ r: 0, c: 0 });
 
-  <!-- Footer -->
-  <div id="footer">
-    <span>💡 数式例: <b>=A1+B1</b> &nbsp;|&nbsp; <b>=SUM(A1:A5)</b> &nbsp;|&nbsp; <b>=AVERAGE(A1:A5)</b></span>
-    <span id="row-col-count"></span>
-  </div>
-</div>
-
-<script>
-const ROWS = 20;
-const COLS = 10;
-const COL_LABELS = Array.from({ length: COLS }, (_, i) => String.fromCharCode(65 + i));
-
-let data = Array.from({ length: ROWS }, () => Array(COLS).fill(""));
-let selected = { r: 0, c: 0 };
-let editing = false;
-
-// --- Formula evaluator ---
-function evalFormula(formula) {
-  try {
-    let expr = formula.slice(1).toUpperCase();
-    expr = expr.replace(/SUM\(([A-J])(\d+):([A-J])(\d+)\)/g, (_, c1, r1, c2, r2) => {
-      let sum = 0;
-      for (let r = +r1 - 1; r <= +r2 - 1; r++)
-        for (let c = c1.charCodeAt(0) - 65; c <= c2.charCodeAt(0) - 65; c++)
-          sum += parseFloat(data[r]?.[c] || 0);
-      return sum;
-    });
-    expr = expr.replace(/AVERAGE\(([A-J])(\d+):([A-J])(\d+)\)/g, (_, c1, r1, c2, r2) => {
-      let sum = 0, count = 0;
-      for (let r = +r1 - 1; r <= +r2 - 1; r++)
-        for (let c = c1.charCodeAt(0) - 65; c <= c2.charCodeAt(0) - 65; c++) {
-          sum += parseFloat(data[r]?.[c] || 0); count++;
+            // 簡易的な表示用の処理
+            return (
+                <div>
+                    <h1>miyusheet</h1>
+                    <table border="1">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                {COL_LABELS.map(label => <th key={label}>{label}</th>)}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {data.map((row, r) => (
+                                <tr key={r}>
+                                    <td>{r + 1}</td>
+                                    {row.map((cell, c) => (
+                                        <td 
+                                            key={c} 
+                                            className={selected.r === r && selected.c === c ? 'selected' : ''}
+                                            onClick={() => setSelected({r, c})}
+                                        >
+                                            {cell}
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            );
         }
-      return count ? sum / count : 0;
-    });
-    expr = expr.replace(/([A-J])(\d+)/g, (_, col, row) =>
-      parseFloat(data[+row - 1]?.[col.charCodeAt(0) - 65] || 0)
-    );
-    return Function('"use strict"; return (' + expr + ')')();
-  } catch { return "#ERR"; }
-}
 
-function getCellDisplay(r, c) {
-  const v = data[r][c];
-  if (typeof v === "string" && v.startsWith("=")) return evalFormula(v);
-  return v;
-}
-
-// --- DOM helpers ---
-function cellId(r, c) { return `cell-${r}-${c}`; }
-function rowHeaderId(r) { return `rh-${r}`; }
-function colHeaderId(c) { return `ch-${c}`; }
-
-function buildTable() {
-  const table = document.getElementById("sheet");
-  // Header row
-  const thead = document.createElement("thead");
-  const headerRow = document.createElement("tr");
-  const corner = document.createElement("th");
-  corner.className = "corner";
-  headerRow.appendChild(corner);
-  COL_LABELS.forEach((label, c) => {
-    const th = document.createElement("th");
-    th.className = "col-header";
-    th.id = colHeaderId(c);
-    th.textContent = label;
-    headerRow.appendChild(th);
-  });
-  thead.appendChild(headerRow);
-  table.appendChild(thead);
-
-  // Body
-  const tbody = document.createElement("tbody");
-  for (let r = 0; r < ROWS; r++) {
-    const tr = document.createElement("tr");
-    const rh = document.createElement("td");
-    rh.className = "row-header" + (r % 2 !== 0 ? " odd" : "");
-    rh.id = rowHeaderId(r);
-    rh.textContent = r + 1;
-    tr.appendChild(rh);
-
-    for (let c = 0; c < COLS; c++) {
-      const td = document.createElement("td");
-      td.className = "cell" + (r % 2 !== 0 ? " odd" : "");
-      td.id = cellId(r, c);
-      td.addEventListener("click", () => selectCell(r, c));
-      td.addEventListener("dblclick", () => startEdit(r, c));
-      const div = document.createElement("div");
-      div.className = "cell-content";
-      div.innerHTML = "&nbsp;";
-      td.appendChild(div);
-      tr.appendChild(td);
-    }
-    tbody.appendChild(tr);
-  }
-  table.appendChild(tbody);
-  document.getElementById("row-col-count").textContent = `${ROWS} 行 × ${COLS} 列`;
-}
-
-function refreshCell(r, c) {
-  const td = document.getElementById(cellId(r, c));
-  if (!td) return;
-  const display = getCellDisplay(r, c);
-  // Remove input if present
-  const existing = td.querySelector("input");
-  if (existing) existing.remove();
-  let div = td.querySelector(".cell-content");
-  if (!div) { div = document.createElement("div"); td.appendChild(div); }
-  div.className = "cell-content";
-  if (display === "" || display == null) {
-    div.innerHTML = "&nbsp;";
-  } else if (display === "#ERR") {
-    div.textContent = display;
-    div.classList.add("error");
-  } else if (typeof display === "number") {
-    div.textContent = display;
-    div.classList.add("number");
-  } else {
-    div.textContent = String(display);
-  }
-}
-
-function refreshAll() {
-  for (let r = 0; r < ROWS; r++)
-    for (let c = 0; c < COLS; c++)
-      refreshCell(r, c);
-}
-
-function updateSelectionStyle() {
-  // Reset all headers
-  COL_LABELS.forEach((_, c) => {
-    const th = document.getElementById(colHeaderId(c));
-    if (th) th.className = "col-header" + (c === selected.c ? " active" : "");
-  });
-  for (let r = 0; r < ROWS; r++) {
-    const rh = document.getElementById(rowHeaderId(r));
-    if (rh) {
-      rh.className = "row-header" + (r % 2 !== 0 ? " odd" : "") + (r === selected.r ? " active" : "");
-    }
-    for (let c = 0; c < COLS; c++) {
-      const td = document.getElementById(cellId(r, c));
-      if (!td) continue;
-      const isSelected = r === selected.r && c === selected.c;
-      td.className = "cell" + (r % 2 !== 0 ? " odd" : "") + (isSelected ? " selected" : "");
-    }
-  }
-  // Formula bar
-  document.getElementById("cell-ref").textContent = `${COL_LABELS[selected.c]}${selected.r + 1}`;
-  const val = data[selected.r][selected.c];
-  const fd = document.getElementById("formula-display");
-  if (val) { fd.textContent = val; fd.classList.remove("empty"); }
-  else { fd.textContent = "セルの内容"; fd.classList.add("empty"); }
-}
-
-function selectCell(r, c) {
-  if (editing) commitEdit();
-  selected = { r, c };
-  updateSelectionStyle();
-}
-
-function moveSelection(dr, dc) {
-  selectCell(
-    Math.max(0, Math.min(ROWS - 1, selected.r + dr)),
-    Math.max(0, Math.min(COLS - 1, selected.c + dc))
-  );
-}
-
-function startEdit(r, c) {
-  selected = { r, c };
-  editing = true;
-  const td = document.getElementById(cellId(r, c));
-  let div = td.querySelector(".cell-content");
-  if (div) div.remove();
-  let input = td.querySelector("input");
-  if (!input) {
-    input = document.createElement("input");
-    input.className = "cell-input";
-    input.type = "text";
-    td.appendChild(input);
-    input.addEventListener("blur", commitEdit);
-  }
-  input.value = data[r][c];
-  input.focus();
-  updateSelectionStyle();
-}
-
-function commitEdit() {
-  editing = false;
-  const { r, c } = selected;
-  const td = document.getElementById(cellId(r, c));
-  const input = td ? td.querySelector("input") : null;
-  if (input) {
-    data[r][c] = input.value;
-    input.removeEventListener("blur", commitEdit);
-  }
-  refreshAll();
-  updateSelectionStyle();
-}
-
-// --- Keyboard ---
-document.getElementById("app").addEventListener("keydown", (e) => {
-  if (editing) {
-    if (e.key === "Enter") { e.preventDefault(); commitEdit(); moveSelection(1, 0); }
-    else if (e.key === "Escape") {
-      editing = false;
-      refreshCell(selected.r, selected.c);
-      updateSelectionStyle();
-    }
-    else if (e.key === "Tab") { e.preventDefault(); commitEdit(); moveSelection(0, 1); }
-    return;
-  }
-  const moves = { ArrowUp: [-1,0], ArrowDown: [1,0], ArrowLeft: [0,-1], ArrowRight: [0,1] };
-  if (moves[e.key]) { e.preventDefault(); moveSelection(...moves[e.key]); }
-  else if (e.key === "Enter" || e.key === "F2") { e.preventDefault(); startEdit(selected.r, selected.c); }
-  else if (e.key === "Delete" || e.key === "Backspace") {
-    data[selected.r][selected.c] = "";
-    refreshAll();
-    updateSelectionStyle();
-  } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
-    startEdit(selected.r, selected.c);
-    const td = document.getElementById(cellId(selected.r, selected.c));
-    const input = td ? td.querySelector("input") : null;
-    if (input) { input.value = e.key; }
-  }
-});
-
-// --- Init ---
-buildTable();
-updateSelectionStyle();
-document.getElementById("app").focus();
-</script>
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Spreadsheet />);
+    </script>
 </body>
 </html>
