@@ -3,53 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spreadsheet App</title>
+    <title>🎀 My Sweet Sheet 🎀</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        body { font-family: sans-serif; margin: 20px; }
-        table { border-collapse: collapse; }
-        td, th { border: 1px solid #ccc; padding: 5px; min-width: 50px; height: 25px; }
-        .selected { border: 2px solid #2563eb !important; background-color: #eff6ff; }
+        :root {
+            --main-pink: #ffb6c1;
+            --soft-pink: #fff0f5;
+            --accent-gold: #d4af37;
+        }
+        body { 
+            background-color: var(--soft-pink); 
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            color: #555;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 { 
+            color: #ff69b4; 
+            text-shadow: 2px 2px #fff;
+            font-size: 2em;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(255, 182, 193, 0.4);
+            border: 3px solid var(--main-pink);
+        }
+        table { 
+            border-collapse: separate; 
+            border-spacing: 0;
+            border: 1px solid var(--main-pink);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th { 
+            background-color: var(--main-pink); 
+            color: white; 
+            padding: 10px;
+            font-weight: normal;
+        }
+        td { 
+            border: 1px solid #ffe4e1; 
+            width: 80px; 
+            height: 30px; 
+            text-align: center;
+            background: white;
+        }
+        td:hover { background-color: #fff9fb; }
+        .selected { 
+            outline: 3px solid #ff69b4; 
+            z-index: 10;
+        }
+        input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            text-align: center;
+            background: #fffafa;
+            font-size: 14px;
+            outline: none;
+        }
+        .status-bar {
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #ff69b4;
+        }
     </style>
 </head>
 <body>
+    <h1>🎀 miyusheet 🎀</h1>
     <div id="root"></div>
+    <div class="status-bar">✨ ダブルクリックで編集してね ✨</div>
 
     <script type="text/babel">
-        const { useState, useRef, useEffect, useCallback } = React;
+        const { useState, useEffect } = React;
 
-        // --- ここから下に、あなたが書いた元のコードを貼り付けます ---
         function Spreadsheet() {
-            const ROWS = 20;
-            const COLS = 10;
+            const ROWS = 15;
+            const COLS = 8;
             const COL_LABELS = Array.from({ length: COLS }, (_, i) => String.fromCharCode(65 + i));
-            const [data, setData] = useState(() => Array.from({ length: ROWS }, () => Array(COLS).fill("")));
-            const [selected, setSelected] = useState({ r: 0, c: 0 });
 
-            // 簡易的な表示用の処理
+            // 保存機能：ブラウザの保存領域（LocalStorage）からデータを読み込む
+            const [data, setData] = useState(() => {
+                const saved = localStorage.getItem('miyusheet_data');
+                return saved ? JSON.parse(saved) : Array.from({ length: ROWS }, () => Array(COLS).fill(""));
+            });
+
+            const [selected, setSelected] = useState({ r: 0, c: 0 });
+            const [editing, setEditing] = useState(false);
+
+            // データが更新されるたびに、ブラウザに自動保存
+            useEffect(() => {
+                localStorage.setItem('miyusheet_data', JSON.stringify(data));
+            }, [data]);
+
+            const handleDoubleClick = () => setEditing(true);
+
+            const handleChange = (e, r, c) => {
+                const newData = [...data];
+                newData[r][c] = e.target.value;
+                setData(newData);
+            };
+
+            const handleBlur = () => setEditing(false);
+
             return (
-                <div>
-                    <h1>miyusheet</h1>
-                    <table border="1">
+                <div className="container">
+                    <table>
                         <thead>
                             <tr>
-                                <th></th>
+                                <th style={{width: '40px'}}>♡</th>
                                 {COL_LABELS.map(label => <th key={label}>{label}</th>)}
                             </tr>
                         </thead>
                         <tbody>
                             {data.map((row, r) => (
                                 <tr key={r}>
-                                    <td>{r + 1}</td>
+                                    <td style={{backgroundColor: '#fff0f5', color: '#ff69b4'}}>{r + 1}</td>
                                     {row.map((cell, c) => (
                                         <td 
                                             key={c} 
                                             className={selected.r === r && selected.c === c ? 'selected' : ''}
-                                            onClick={() => setSelected({r, c})}
+                                            onClick={() => { if(!editing) setSelected({r, c}); }}
+                                            onDoubleClick={handleDoubleClick}
                                         >
-                                            {cell}
+                                            {editing && selected.r === r && selected.c === c ? (
+                                                <input 
+                                                    autoFocus 
+                                                    value={cell} 
+                                                    onChange={(e) => handleChange(e, r, c)}
+                                                    onBlur={handleBlur}
+                                                />
+                                            ) : (
+                                                cell
+                                            )}
                                         </td>
                                     ))}
                                 </tr>
