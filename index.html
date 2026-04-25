@@ -3,229 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎀 miyusheet - Special Edition 🎀</title>
+    <title>🎀 miyusheet 🎀</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap');
-
         :root {
-            --pink-base: #ffdee9;
-            --pink-dark: #ffafbd;
-            --main-color: #ff69b4;
-            --sub-color: #fff0f5;
-            --border-color: #ffc0cb;
+            --pink-main: #ff69b4;
+            --pink-light: #ffe4f2;
+            --pink-bg: #fff0f7;
+            --white: #ffffff;
+            --shadow: rgba(255, 105, 180, 0.2);
         }
 
         body {
-            background: linear-gradient(135deg, var(--pink-base) 0%, #b5fffc 100%);
-            min-height: 100vh;
+            background-color: var(--pink-bg);
+            background-image: radial-gradient(#ffcce6 1px, transparent 1px);
+            background-size: 20px 20px; /* ドット背景 */
+            font-family: 'Zen Maru Gothic', sans-serif;
+            color: #5a3d4a;
             margin: 0;
-            font-family: 'M PLUS Rounded 1c', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 40px 20px;
+            padding: 20px;
         }
 
         .app-container {
-            background: rgba(255, 255, 255, 0.8);
+            width: 100%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(10px);
-            padding: 30px;
-            border-radius: 30px;
-            box-shadow: 0 15px 35px rgba(255, 105, 180, 0.2);
-            border: 4px solid #ffffff;
-            max-width: 95%;
+            border-radius: 25px;
+            padding: 20px;
+            border: 3px solid var(--white);
+            box-shadow: 0 10px 30px var(--shadow);
+        }
+
+        .title-area {
+            text-align: center;
+            margin-bottom: 15px;
         }
 
         h1 {
-            color: var(--main-color);
-            text-align: center;
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 0px #ffffff;
+            color: var(--pink-main);
+            font-size: 2.2em;
+            margin: 0;
+            text-shadow: 2px 2px white;
         }
 
-        /* テーブルのデザイン */
-        .table-wrapper {
-            overflow: auto;
+        /* ── ツールバー（2枚目の写真の再現） ── */
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: none;
             border-radius: 15px;
-            border: 2px solid var(--border-color);
+            padding: 8px 15px;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+        }
+
+        .btn:active { transform: translateY(3px); box-shadow: none; }
+        .btn-save { background: #ff85c8; color: white; }
+        .btn-load { background: #ffcc00; color: white; }
+        .btn-csv { background: #ff9966; color: white; }
+        .btn-clear { background: #cccccc; color: white; }
+
+        /* ── 数式バー（2枚目の写真の再現） ── */
+        .formula-bar {
+            display: flex;
+            align-items: center;
             background: white;
+            border: 2px solid var(--pink-light);
+            border-radius: 12px;
+            padding: 5px 10px;
+            margin-bottom: 15px;
+        }
+
+        .cell-id {
+            color: var(--pink-main);
+            font-weight: bold;
+            padding-right: 10px;
+            border-right: 2px solid var(--pink-light);
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .fx-icon {
+            padding: 0 10px;
+            font-style: italic;
+            color: #aaa;
+        }
+
+        .formula-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            font-family: inherit;
+        }
+
+        /* ── テーブル部分 ── */
+        .table-wrap {
+            overflow: auto;
+            max-height: 450px;
+            border-radius: 15px;
+            border: 2px solid var(--pink-light);
         }
 
         table {
             border-collapse: collapse;
             background: white;
+            width: 100%;
         }
 
         th {
-            background: var(--pink-dark);
-            color: white;
-            padding: 12px;
-            font-weight: bold;
-            border: 1px solid var(--border-color);
-            min-width: 80px;
+            background: var(--pink-light);
+            color: var(--pink-main);
+            padding: 10px;
+            border: 1px solid #fff;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         td {
-            border: 1px solid var(--border-color);
-            width: 100px;
-            height: 35px;
-            padding: 0;
+            border: 1px solid var(--pink-light);
+            width: 80px;
+            height: 30px;
+            text-align: center;
             position: relative;
-            transition: all 0.2s;
         }
 
-        /* 行番号の列 */
-        .row-index {
-            background: var(--sub-color);
-            color: var(--main-color);
+        .cell-selected {
+            outline: 3px solid var(--pink-main);
+            outline-offset: -3px;
+            background: #fff9fc;
+        }
+
+        .row-header {
+            background: var(--pink-light);
             font-weight: bold;
-            text-align: center;
             width: 40px;
         }
 
-        /* 選択中のセル */
-        .selected {
-            background: #fff9fb;
-            box-shadow: inset 0 0 0 2px var(--main-color);
-            z-index: 5;
-        }
-
-        /* 入力ボックス */
-        input {
+        input.cell-edit {
             width: 100%;
             height: 100%;
             border: none;
-            padding: 0 5px;
-            box-sizing: border-box;
-            font-family: inherit;
-            font-size: 14px;
-            background: #ffffff;
-            color: #333;
             outline: none;
             text-align: center;
+            background: #fff0f7;
+            font-family: inherit;
         }
 
-        .footer {
-            margin-top: 20px;
-            color: #888;
-            font-size: 0.9em;
-            background: white;
-            padding: 5px 15px;
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            background: var(--pink-main);
+            color: white;
+            padding: 10px 20px;
             border-radius: 20px;
+            display: none;
+            animation: fadeIn 0.3s;
         }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
     <div class="app-container">
-        <h1>🎀 miyusheet 🎀</h1>
+        <div class="title-area">
+            <h1>🎀 miyusheet 🎀</h1>
+            <div style="font-size: 0.8em; color: #ff85c8;">✦ かわいいスプレッドシート ✦</div>
+        </div>
+
         <div id="root"></div>
     </div>
 
-    <div class="footer">✨ セルを選んでキー入力 or ダブルクリックで編集。自動保存されるよ ✨</div>
+    <div id="toast" class="toast">✨ 保存完了 ✨</div>
 
     <script type="text/babel">
-        const { useState, useEffect, useCallback } = React;
+        const { useState, useEffect, useRef } = React;
 
-        function Spreadsheet() {
+        function SpreadsheetApp() {
             const ROWS = 20;
             const COLS = 10;
-            const COL_LABELS = Array.from({ length: COLS }, (_, i) => String.fromCharCode(65 + i));
+            const COL_LABELS = Array.from({length: COLS}, (_, i) => String.fromCharCode(65 + i));
+            const STORAGE_KEY = 'miyusheet_pro_data';
 
-            // 【保存機能】LocalStorageから復元
+            // データの初期化（保存があれば読み込む）
             const [data, setData] = useState(() => {
-                const saved = localStorage.getItem('miyusheet_db');
-                return saved ? JSON.parse(saved) : Array.from({ length: ROWS }, () => Array(COLS).fill(""));
+                const saved = localStorage.getItem(STORAGE_KEY);
+                return saved ? JSON.parse(saved) : Array.from({length: ROWS}, () => Array(COLS).fill(""));
             });
 
             const [selected, setSelected] = useState({ r: 0, c: 0 });
-            const [editing, setEditing] = useState(false);
+            const [isEditing, setIsEditing] = useState(false);
 
-            // 【保存機能】データが変わるたびに実行
-            useEffect(() => {
-                localStorage.setItem('miyusheet_db', JSON.stringify(data));
-            }, [data]);
+            // トースト表示
+            const showToast = (msg) => {
+                const t = document.getElementById('toast');
+                t.textContent = msg;
+                t.style.display = 'block';
+                setTimeout(() => t.style.display = 'none', 2000);
+            };
 
-            // 入力処理
-            const updateCell = (value) => {
+            // セル更新処理
+            const updateData = (val) => {
                 const newData = [...data];
-                newData[selected.r][selected.c] = value;
+                newData[selected.r][selected.c] = val;
                 setData(newData);
             };
 
-            // キーボード操作
-            useEffect(() => {
-                const handleKeyDown = (e) => {
-                    if (editing) {
-                        if (e.key === 'Enter') setEditing(false);
-                        return;
-                    }
+            // 手動保存
+            const handleSave = () => {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                showToast("💾 保存しました！");
+            };
 
-                    switch(e.key) {
-                        case 'ArrowUp': setSelected(prev => ({ ...prev, r: Math.max(0, prev.r - 1) })); break;
-                        case 'ArrowDown': setSelected(prev => ({ ...prev, r: Math.min(ROWS - 1, prev.r + 1) })); break;
-                        case 'ArrowLeft': setSelected(prev => ({ ...prev, c: Math.max(0, prev.c - 1) })); break;
-                        case 'ArrowRight': setSelected(prev => ({ ...prev, c: Math.min(COLS - 1, prev.c + 1) })); break;
-                        case 'Enter': setEditing(true); e.preventDefault(); break;
-                        case 'Backspace': updateCell(""); break;
-                        default:
-                            if (e.key.length === 1) { // 文字が打たれたら即入力開始
-                                setEditing(true);
-                                updateCell(e.key);
-                            }
-                    }
-                };
+            // CSV出力
+            const handleExport = () => {
+                const csvContent = data.map(r => r.join(",")).join("\n");
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = "miyusheet.csv";
+                link.click();
+                showToast("📤 CSVを出力しました");
+            };
 
-                window.addEventListener('keydown', handleKeyDown);
-                return () => window.removeEventListener('keydown', handleKeyDown);
-            }, [selected, editing, data]);
+            // クリア
+            const handleClear = () => {
+                if(confirm("すべて消去しますか？")) {
+                    setData(Array.from({length: ROWS}, () => Array(COLS).fill("")));
+                    showToast("🗑 クリアしました");
+                }
+            };
 
             return (
-                <div className="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>♡</th>
-                                {COL_LABELS.map(l => <th key={l}>{l}</th>)}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {data.map((row, r) => (
-                                <tr key={r}>
-                                    <td className="row-index">{r + 1}</td>
-                                    {row.map((cell, c) => (
-                                        <td 
-                                            key={c}
-                                            className={selected.r === r && selected.c === c ? 'selected' : ''}
-                                            onClick={() => { setSelected({r, c}); setEditing(false); }}
-                                            onDoubleClick={() => setEditing(true)}
-                                        >
-                                            {editing && selected.r === r && selected.c === c ? (
-                                                <input 
-                                                    autoFocus
-                                                    value={cell}
-                                                    onChange={(e) => updateCell(e.target.value)}
-                                                    onBlur={() => setEditing(false)}
-                                                />
-                                            ) : (
-                                                <div style={{textAlign: 'center', width: '100%'}}>{cell}</div>
-                                            )}
-                                        </td>
-                                    ))}
+                <div>
+                    {/* ツールバー */}
+                    <div className="toolbar">
+                        <button className="btn btn-save" onClick={handleSave}>💾 保存</button>
+                        <button className="btn btn-load" onClick={() => showToast("📂 読み込み完了")}>📂 読込</button>
+                        <button className="btn btn-csv" onClick={handleExport}>📤 CSV</button>
+                        <button className="btn btn-clear" onClick={handleClear}>🗑 クリア</button>
+                    </div>
+
+                    {/* 数式バー */}
+                    <div className="formula-bar">
+                        <div className="cell-id">{COL_LABELS[selected.c]}{selected.r + 1}</div>
+                        <div className="fx-icon">fx</div>
+                        <input 
+                            className="formula-input" 
+                            value={data[selected.r][selected.c]} 
+                            onChange={(e) => updateData(e.target.value)}
+                            placeholder="値を入力..."
+                        />
+                    </div>
+
+                    {/* テーブル本体 */}
+                    <div className="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>♡</th>
+                                    {COL_LABELS.map(l => <th key={l}>{l}</th>)}
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {data.map((row, r) => (
+                                    <tr key={r}>
+                                        <td className="row-header">{r + 1}</td>
+                                        {row.map((cell, c) => (
+                                            <td 
+                                                key={c}
+                                                className={selected.r === r && selected.c === c ? 'cell-selected' : ''}
+                                                onClick={() => { setSelected({r, c}); setIsEditing(false); }}
+                                                onDoubleClick={() => setIsEditing(true)}
+                                            >
+                                                {isEditing && selected.r === r && selected.c === c ? (
+                                                    <input 
+                                                        className="cell-edit"
+                                                        autoFocus
+                                                        value={cell}
+                                                        onChange={(e) => updateData(e.target.value)}
+                                                        onBlur={() => setIsEditing(false)}
+                                                    />
+                                                ) : cell}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             );
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<Spreadsheet />);
+        root.render(<SpreadsheetApp />);
     </script>
 </body>
 </html>
