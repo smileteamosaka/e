@@ -1,159 +1,63 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎀 My Sweet Sheet 🎀</title>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <style>
-        :root {
-            --main-pink: #ffb6c1;
-            --soft-pink: #fff0f5;
-            --accent-gold: #d4af37;
-        }
-        body { 
-            background-color: var(--soft-pink); 
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            color: #555;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-        h1 { 
-            color: #ff69b4; 
-            text-shadow: 2px 2px #fff;
-            font-size: 2em;
-        }
-        .container {
-            background: white;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(255, 182, 193, 0.4);
-            border: 3px solid var(--main-pink);
-        }
-        table { 
-            border-collapse: separate; 
-            border-spacing: 0;
-            border: 1px solid var(--main-pink);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        th { 
-            background-color: var(--main-pink); 
-            color: white; 
-            padding: 10px;
-            font-weight: normal;
-        }
-        td { 
-            border: 1px solid #ffe4e1; 
-            width: 80px; 
-            height: 30px; 
-            text-align: center;
-            background: white;
-        }
-        td:hover { background-color: #fff9fb; }
-        .selected { 
-            outline: 3px solid #ff69b4; 
-            z-index: 10;
-        }
-        input {
-            width: 100%;
-            height: 100%;
-            border: none;
-            text-align: center;
-            background: #fffafa;
-            font-size: 14px;
-            outline: none;
-        }
-        .status-bar {
-            margin-top: 15px;
-            font-size: 0.9em;
-            color: #ff69b4;
-        }
-    </style>
-</head>
-<body>
-    <h1>🎀 miyusheet 🎀</h1>
-    <div id="root"></div>
-    <div class="status-bar">✨ ダブルクリックで編集してね ✨</div>
-
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-
-        function Spreadsheet() {
-            const ROWS = 15;
-            const COLS = 8;
-            const COL_LABELS = Array.from({ length: COLS }, (_, i) => String.fromCharCode(65 + i));
-
-            // 保存機能：ブラウザの保存領域（LocalStorage）からデータを読み込む
-            const [data, setData] = useState(() => {
-                const saved = localStorage.getItem('miyusheet_data');
-                return saved ? JSON.parse(saved) : Array.from({ length: ROWS }, () => Array(COLS).fill(""));
-            });
-
-            const [selected, setSelected] = useState({ r: 0, c: 0 });
-            const [editing, setEditing] = useState(false);
-
-            // データが更新されるたびに、ブラウザに自動保存
-            useEffect(() => {
-                localStorage.setItem('miyusheet_data', JSON.stringify(data));
-            }, [data]);
-
-            const handleDoubleClick = () => setEditing(true);
-
-            const handleChange = (e, r, c) => {
-                const newData = [...data];
-                newData[r][c] = e.target.value;
-                setData(newData);
-            };
-
-            const handleBlur = () => setEditing(false);
-
-            return (
-                <div className="container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style={{width: '40px'}}>♡</th>
-                                {COL_LABELS.map(label => <th key={label}>{label}</th>)}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {data.map((row, r) => (
-                                <tr key={r}>
-                                    <td style={{backgroundColor: '#fff0f5', color: '#ff69b4'}}>{r + 1}</td>
-                                    {row.map((cell, c) => (
-                                        <td 
-                                            key={c} 
-                                            className={selected.r === r && selected.c === c ? 'selected' : ''}
-                                            onClick={() => { if(!editing) setSelected({r, c}); }}
-                                            onDoubleClick={handleDoubleClick}
-                                        >
-                                            {editing && selected.r === r && selected.c === c ? (
-                                                <input 
-                                                    autoFocus 
-                                                    value={cell} 
-                                                    onChange={(e) => handleChange(e, r, c)}
-                                                    onBlur={handleBlur}
-                                                />
-                                            ) : (
-                                                cell
-                                            )}
-                                        </td>
-                                    ))}
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            );
-        }
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<Spreadsheet />);
-    </script>
-</body>
-</html>
+<!DOCTYPE html><html lang="ja"><head>  <meta charset="UTF-8" />  <meta name="viewport" content="width=device-width, initial-scale=1.0" />  <title> miyusheet </title>  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700&family=Kaisei+Opti&display=swap" rel="stylesheet" />  <style>    :root {      --pink-1: #fce4ec;      --pink-2: #f8bbd0;      --pink-3: #f48fb1;      --pink-4: #e91e8c;      --pink-hot: #ff4da6;      --pink-pale: #fff0f7;      --cream: #fffaf9;      --gold: #e0a0b0;      --text: #5a3d4a;      --text-soft: #a07880;      --shadow: rgba(244, 143, 177, 0.25);      --cell-w: 90px;      --cell-h: 32px;      --header-h: 38px;    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {      background: var(--pink-1);      background-image:        radial-gradient(circle at 15% 20%, #ffd6e7 0%, transparent 45%),        radial-gradient(circle at 85% 80%, #fce4f3 0%, transparent 40%),        url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='10' y='26' font-size='16' opacity='0.07'%3E✿%3C/text%3E%3C/svg%3E");      font-family: 'Zen Maru Gothic', sans-serif;      color: var(--text);      min-height: 100vh;      display: flex;      flex-direction: column;      align-items: center;      padding: 28px 16px 60px;    }
+    /* ── HEADER ── */    .header {      text-align: center;      margin-bottom: 24px;      animation: floatIn .7s ease both;    }    .header-title {      font-family: 'Kaisei Opti', serif;      font-size: 2.4rem;      color: var(--pink-hot);      text-shadow: 0 2px 8px rgba(255,77,166,.3), 0 0 30px #ffc0de;      letter-spacing: .12em;    }    .header-sub {      font-size: .82rem;      color: var(--text-soft);      margin-top: 4px;      letter-spacing: .08em;    }
+    @keyframes floatIn {      from { opacity: 0; transform: translateY(-16px); }      to { opacity: 1; transform: translateY(0); }    }
+    /* ── TOOLBAR ── */    .toolbar {      display: flex;      gap: 10px;      flex-wrap: wrap;      align-items: center;      background: white;      border: 2px solid var(--pink-2);      border-radius: 18px;      padding: 10px 18px;      margin-bottom: 14px;      box-shadow: 0 4px 20px var(--shadow);      width: 100%;      max-width: 900px;      animation: floatIn .7s .15s ease both;    }    .toolbar-label {      font-size: .75rem;      color: var(--text-soft);      margin-right: 2px;    }    .toolbar input[type="text"] {      border: 1.5px solid var(--pink-2);      border-radius: 8px;      padding: 4px 10px;      font-size: .9rem;      font-family: 'Zen Maru Gothic', sans-serif;      color: var(--text);      background: var(--pink-pale);      width: 220px;      outline: none;      transition: border-color .2s;    }    .toolbar input[type="text"]:focus { border-color: var(--pink-hot); }
+    .btn {      border: none; cursor: pointer;      font-family: 'Zen Maru Gothic', sans-serif;      font-size: .82rem;      border-radius: 20px;      padding: 6px 16px;      transition: transform .15s, box-shadow .15s;      letter-spacing: .04em;    }    .btn:active { transform: scale(.95); }    .btn-pink {      background: linear-gradient(135deg, var(--pink-hot), #ff85c8);      color: white;      box-shadow: 0 3px 12px rgba(255,77,166,.35);    }    .btn-pink:hover { box-shadow: 0 5px 18px rgba(255,77,166,.5); }    .btn-outline {      background: white;      color: var(--pink-hot);      border: 1.5px solid var(--pink-3);    }    .btn-outline:hover { background: var(--pink-pale); }    .btn-danger {      background: white;      color: #d44;      border: 1.5px solid #f8bbb0;    }    .btn-danger:hover { background: #fff5f5; }
+    .formula-bar {      display: flex;      align-items: center;      gap: 8px;      margin-left: auto;    }    .cell-ref {      background: var(--pink-pale);      border: 1.5px solid var(--pink-2);      border-radius: 8px;      padding: 4px 10px;      font-size: .82rem;      color: var(--pink-hot);      min-width: 52px;      text-align: center;      font-weight: 700;    }    .fx-label {      font-size: .75rem;      color: var(--text-soft);      font-style: italic;    }    .formula-input {      flex: 1;      border: 1.5px solid var(--pink-2);      border-radius: 8px;      padding: 4px 10px;      font-size: .85rem;      font-family: 'Courier New', monospace;      color: var(--text);      background: var(--pink-pale);      outline: none;      min-width: 140px;      transition: border-color .2s;    }    .formula-input:focus { border-color: var(--pink-hot); }
+    /* ── SHEET CONTAINER ── */    .sheet-wrap {      background: white;      border: 2.5px solid var(--pink-2);      border-radius: 22px;      overflow: hidden;      box-shadow: 0 8px 36px var(--shadow), 0 2px 8px rgba(244,143,177,.12);      max-width: 900px;      width: 100%;      animation: floatIn .7s .3s ease both;    }
+    .scroll-area {      overflow: auto;      max-height: 520px;    }
+    table {      border-collapse: separate;      border-spacing: 0;      table-layout: fixed;      min-width: 100%;    }
+    /* Column header */    thead th {      position: sticky;      top: 0;      z-index: 20;      background: linear-gradient(180deg, #ffe4f0 0%, var(--pink-2) 100%);      color: var(--pink-hot);      font-weight: 700;      font-size: .8rem;      letter-spacing: .06em;      height: var(--header-h);      border-bottom: 2px solid var(--pink-3);      padding: 0 4px;      text-align: center;      user-select: none;    }    thead th.corner-cell {      width: 46px;      min-width: 46px;      background: linear-gradient(135deg, #ffd6e8, var(--pink-2));      font-size: 1rem;    }    thead th:not(.corner-cell) {      width: var(--cell-w);      min-width: var(--cell-w);      border-left: 1px solid var(--pink-2);    }
+    /* Row header */    tbody td.row-header {      position: sticky;      left: 0;      z-index: 10;      background: linear-gradient(90deg, #ffe4f0 0%, #fff5f9 100%);      color: var(--pink-3);      font-size: .75rem;      font-weight: 700;      text-align: center;      width: 46px;      min-width: 46px;      border-right: 1.5px solid var(--pink-2);      border-bottom: 1px solid #ffeaf4;      user-select: none;    }
+    tbody td.row-header.row-selected {      background: linear-gradient(90deg, #ffc8e0 0%, #ffd9ed 100%);      color: var(--pink-hot);    }
+    /* Data cells */    tbody td.data-cell {      width: var(--cell-w);      min-width: var(--cell-w);      height: var(--cell-h);      border-bottom: 1px solid #ffeaf4;      border-left: 1px solid #ffeaf4;      position: relative;      vertical-align: middle;      padding: 0;      transition: background .12s;    }    tbody td.data-cell:hover { background: #fff7fb; }    tbody td.data-cell.selected-cell {      background: #fff0f8 !important;      outline: 2.5px solid var(--pink-hot);      outline-offset: -2px;      z-index: 5;    }    tbody td.data-cell.in-col { background: #fff9fd; }    tbody td.data-cell.in-row { background: #fff9fd; }
+    .cell-display {      display: block;      width: 100%;      height: var(--cell-h);      line-height: var(--cell-h);      text-align: center;      font-size: .82rem;      padding: 0 6px;      overflow: hidden;      white-space: nowrap;      text-overflow: ellipsis;      cursor: default;    }
+    .cell-input {      position: absolute;      inset: 0;      width: 100%;      height: 100%;      border: none;      outline: none;      background: #fff8fd;      font-family: 'Zen Maru Gothic', sans-serif;      font-size: .83rem;      color: var(--text);      text-align: center;      padding: 0 6px;      z-index: 30;    }
+    /* ── STATUS BAR ── */    .status-bar {      display: flex;      align-items: center;      gap: 16px;      background: linear-gradient(135deg, #ffe4f0, #ffd6e8);      padding: 7px 18px;      font-size: .75rem;      color: var(--text-soft);      border-top: 1.5px solid var(--pink-2);      flex-wrap: wrap;    }    .status-dot { color: var(--pink-hot); font-size: 1rem; }    .status-sum { color: var(--pink-hot); font-weight: 700; }
+    /* ── SAVE TOAST ── */    .toast {      position: fixed;      bottom: 28px;      left: 50%;      transform: translateX(-50%) translateY(80px);      background: linear-gradient(135deg, var(--pink-hot), #ff85c8);      color: white;      padding: 10px 24px;      border-radius: 30px;      font-size: .85rem;      box-shadow: 0 6px 24px rgba(255,77,166,.4);      transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .35s;      opacity: 0;      pointer-events: none;      z-index: 999;      white-space: nowrap;    }    .toast.show {      transform: translateX(-50%) translateY(0);      opacity: 1;    }
+    /* scrollbar */    .scroll-area::-webkit-scrollbar { width: 6px; height: 6px; }    .scroll-area::-webkit-scrollbar-track { background: var(--pink-pale); }    .scroll-area::-webkit-scrollbar-thumb { background: var(--pink-3); border-radius: 6px; }  </style></head><body>
+<header class="header">  <div class="header-title"> miyusheet </div>  <div class="header-sub">✦ かわいいスプレッドシート ✦</div></header>
+<div class="toolbar" id="toolbar">  <button class="btn btn-pink" id="btnSave"> 保存</button>  <button class="btn btn-outline" id="btnLoad"> 読込</button>  <button class="btn btn-outline" id="btnExportCSV"> CSV</button>  <button class="btn btn-danger" id="btnClear"> クリア</button>
+  <div class="formula-bar">    <span class="cell-ref" id="cellRef">A1</span>    <span class="fx-label">fx</span>    <input class="formula-input" id="formulaInput" type="text" placeholder="値を入力…" />  </div></div>
+<div class="sheet-wrap">  <div class="scroll-area">    <table id="sheet"></table>  </div>  <div class="status-bar">    <span><span class="status-dot">✿</span> ダブルクリック or F2 で編集</span>    <span id="statusSum"></span>    <span id="statusCount"></span>    <span id="statusSaved" style="margin-left:auto; color:#c06080;"></span>  </div></div>
+<div class="toast" id="toast"> 保存しました！</div>
+<script>(() => {  const ROWS = 20, COLS = 10;  const COL_LABELS = Array.from({length: COLS}, (_, i) => String.fromCharCode(65 + i));  const KEY = 'miyusheet_v2';
+  /* ── State ── */  let data = load();  let sel = {r: 0, c: 0};  let editing = false;
+  function load() {    try {      const s = localStorage.getItem(KEY);      if (s) return JSON.parse(s);    } catch(e) {}    return Array.from({length: ROWS}, () => Array(COLS).fill(''));  }
+  function save() {    localStorage.setItem(KEY, JSON.stringify(data));    document.getElementById('statusSaved').textContent = '最終保存: ' + new Date().toLocaleTimeString('ja-JP');    showToast(' 保存しました！');  }
+  function showToast(msg) {    const t = document.getElementById('toast');    t.textContent = msg;    t.classList.add('show');    clearTimeout(t._timer);    t._timer = setTimeout(() => t.classList.remove('show'), 2200);  }
+  /* ── Build table ── */  const table = document.getElementById('sheet');
+  function buildTable() {    table.innerHTML = '';
+    // thead    const thead = table.createTHead();    const hr = thead.insertRow();    const cornerTh = document.createElement('th');    cornerTh.className = 'corner-cell';    cornerTh.textContent = '♡';    hr.appendChild(cornerTh);    COL_LABELS.forEach(label => {      const th = document.createElement('th');      th.textContent = label;      hr.appendChild(th);    });
+    // tbody    const tbody = table.createTBody();    for (let r = 0; r < ROWS; r++) {      const tr = tbody.insertRow();      // row header      const rh = tr.insertCell();      rh.className = 'row-header';      rh.id = `rh${r}`;      rh.textContent = r + 1;
+      for (let c = 0; c < COLS; c++) {        const td = tr.insertCell();        td.className = 'data-cell';        td.id = `cell-${r}-${c}`;        td.dataset.r = r;        td.dataset.c = c;
+        const span = document.createElement('span');        span.className = 'cell-display';        span.id = `disp-${r}-${c}`;        span.textContent = data[r][c];        td.appendChild(span);
+        td.addEventListener('mousedown', e => {          if (editing) commitEdit();          selectCell(r, c);          e.preventDefault();        });        td.addEventListener('dblclick', () => startEdit(r, c));      }    }    renderSelection();  }
+  function selectCell(r, c) {    sel = {r, c};    renderSelection();    updateFormulaBar();    updateStatus();  }
+  function renderSelection() {    // clear all highlights    document.querySelectorAll('.data-cell').forEach(td => {      td.classList.remove('selected-cell', 'in-row', 'in-col');    });    document.querySelectorAll('.row-header').forEach(td => td.classList.remove('row-selected'));
+    const main = document.getElementById(`cell-${sel.r}-${sel.c}`);    if (main) main.classList.add('selected-cell');
+    // highlight row + col lightly    for (let c = 0; c < COLS; c++) {      const td = document.getElementById(`cell-${sel.r}-${c}`);      if (td && c !== sel.c) td.classList.add('in-row');    }    for (let r = 0; r < ROWS; r++) {      const td = document.getElementById(`cell-${r}-${sel.c}`);      if (td && r !== sel.r) td.classList.add('in-col');    }
+    const rh = document.getElementById(`rh${sel.r}`);    if (rh) rh.classList.add('row-selected');  }
+  /* ── Formula bar ── */  const formulaInput = document.getElementById('formulaInput');  const cellRef = document.getElementById('cellRef');
+  function updateFormulaBar() {    cellRef.textContent = COL_LABELS[sel.c] + (sel.r + 1);    formulaInput.value = data[sel.r][sel.c];  }
+  formulaInput.addEventListener('input', () => {    data[sel.r][sel.c] = formulaInput.value;    document.getElementById(`disp-${sel.r}-${sel.c}`).textContent = formulaInput.value;    updateStatus();  });
+  formulaInput.addEventListener('keydown', e => {    if (e.key === 'Enter') {      const newR = Math.min(sel.r + 1, ROWS - 1);      selectCell(newR, sel.c);      formulaInput.blur();    }    if (e.key === 'Escape') formulaInput.blur();  });
+  /* ── Inline editing ── */  let activeInput = null;
+  function startEdit(r, c) {    if (editing && (sel.r !== r || sel.c !== c)) commitEdit();    selectCell(r, c);    editing = true;
+    const td = document.getElementById(`cell-${r}-${c}`);    const disp = document.getElementById(`disp-${r}-${c}`);    disp.style.display = 'none';
+    const inp = document.createElement('input');    inp.type = 'text';    inp.className = 'cell-input';    inp.value = data[r][c];    inp.id = `inp-${r}-${c}`;    td.appendChild(inp);    inp.focus();    inp.select();    activeInput = inp;
+    inp.addEventListener('input', () => {      data[r][c] = inp.value;      formulaInput.value = inp.value;      updateStatus();    });
+    inp.addEventListener('blur', () => commitEdit());
+    inp.addEventListener('keydown', e => {      if (e.key === 'Enter') {        e.preventDefault();        commitEdit();        const newR = Math.min(r + 1, ROWS - 1);        selectCell(newR, c);      } else if (e.key === 'Escape') {        inp.value = data[r][c];        commitEdit();      } else if (e.key === 'Tab') {        e.preventDefault();        commitEdit();        const newC = e.shiftKey ? Math.max(c - 1, 0) : Math.min(c + 1, COLS - 1);        selectCell(r, newC);      } else if (e.key === 'ArrowUp' && !e.shiftKey) {        e.preventDefault(); commitEdit(); selectCell(Math.max(r-1,0), c);      } else if (e.key === 'ArrowDown' && !e.shiftKey) {        e.preventDefault(); commitEdit(); selectCell(Math.min(r+1,ROWS-1), c);      }    });  }
+  function commitEdit() {    if (!editing) return;    editing = false;    const r = sel.r, c = sel.c;    const inp = document.getElementById(`inp-${r}-${c}`);    if (inp) {      data[r][c] = inp.value;      inp.remove();    }    const disp = document.getElementById(`disp-${r}-${c}`);    if (disp) {      disp.style.display = '';      disp.textContent = data[r][c];    }    updateFormulaBar();    updateStatus();  }
+  /* ── Keyboard nav (non-editing) ── */  document.addEventListener('keydown', e => {    if (editing) return;    const {r, c} = sel;    if (e.key === 'ArrowUp') { e.preventDefault(); selectCell(Math.max(r-1,0), c); }    if (e.key === 'ArrowDown') { e.preventDefault(); selectCell(Math.min(r+1,ROWS-1), c); }    if (e.key === 'ArrowLeft') { e.preventDefault(); selectCell(r, Math.max(c-1,0)); }    if (e.key === 'ArrowRight') { e.preventDefault(); selectCell(r, Math.min(c+1,COLS-1)); }    if (e.key === 'Enter' || e.key === 'F2') { e.preventDefault(); startEdit(r, c); }    if (e.key === 'Delete' || e.key === 'Backspace') {      data[r][c] = '';      document.getElementById(`disp-${r}-${c}`).textContent = '';      updateFormulaBar();      updateStatus();    }    if (e.key === 'Tab') {      e.preventDefault();      selectCell(r, e.shiftKey ? Math.max(c-1,0) : Math.min(c+1,COLS-1));    }    // Typing starts edit    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {      data[r][c] = '';      startEdit(r, c);      // The character will be caught by the input's own keydown    }    // Ctrl+S    if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); save(); }  });
+  /* ── Status bar ── */  function updateStatus() {    // Gather numeric values of current selection (single cell here)    const val = data[sel.r][sel.c];    const num = parseFloat(val);    const sumEl = document.getElementById('statusSum');    const cntEl = document.getElementById('statusCount');
+    // Collect all numeric cells    let nums = [], cnt = 0;    data.forEach(row => row.forEach(v => { if(v !== '') cnt++; const n = parseFloat(v); if(!isNaN(n)) nums.push(n); }));    const sum = nums.reduce((a,b) => a+b, 0);    sumEl.innerHTML = nums.length ? `<span class="status-sum">Σ ${sum.toLocaleString('ja-JP')}</span>` : '';    cntEl.textContent = cnt ? `${cnt} セル入力済` : '';  }
+  /* ── Toolbar buttons ── */  document.getElementById('btnSave').addEventListener('click', save);
+  document.getElementById('btnLoad').addEventListener('click', () => {    data = load();    buildTable();    updateFormulaBar();    updateStatus();    showToast(' 読み込みました！');  });
+  document.getElementById('btnClear').addEventListener('click', () => {    if (!confirm('すべてのデータを削除しますか？')) return;    data = Array.from({length: ROWS}, () => Array(COLS).fill(''));    localStorage.removeItem(KEY);    buildTable();    updateFormulaBar();    updateStatus();    showToast(' クリアしました');  });
+  document.getElementById('btnExportCSV').addEventListener('click', () => {    const csv = data.map(row => row.map(v => `"${v.replace(/"/g,'""')}"`).join(',')).join('\n');    const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});    const a = document.createElement('a');    a.href = URL.createObjectURL(blob);    a.download = 'miyusheet.csv';    a.click();    showToast(' CSVを出力しました！');  });
+  /* ── Auto-save every 30s ── */  setInterval(() => {    localStorage.setItem(KEY, JSON.stringify(data));    document.getElementById('statusSaved').textContent = '自動保存: ' + new Date().toLocaleTimeString('ja-JP');  }, 30000);
+  /* ── Init ── */  buildTable();  selectCell(0, 0);  updateFormulaBar();  updateStatus();})();</script></body></html>
