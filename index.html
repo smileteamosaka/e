@@ -3,318 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎀 miyusheet 🎀</title>
-    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <title>Miyu Power</title>
     <style>
-        :root {
-            --pink-main: #ff69b4;
-            --pink-light: #ffe4f2;
-            --pink-bg: #fff0f7;
-            --white: #ffffff;
-            --shadow: rgba(255, 105, 180, 0.2);
+        /* 基本設定: スクロール禁止 */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            background-color: white;
+            font-family: 'Arial', sans-serif;
         }
 
-        body {
-            background-color: var(--pink-bg);
-            background-image: radial-gradient(#ffcce6 1px, transparent 1px);
-            background-size: 20px 20px; /* ドット背景 */
-            font-family: 'Zen Maru Gothic', sans-serif;
-            color: #5a3d4a;
-            margin: 0;
+        /* 固定背景: 巨大な発光する黄色の球体 */
+        .background-sun {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70vh;
+            height: 70vh;
+            background: radial-gradient(circle, #fff700 0%, #ffcc00 50%, #ffaa00 100%);
+            border-radius: 50%;
+            z-index: -1;
+            box-shadow: 0 0 100px 40px rgba(255, 230, 0, 0.8);
+            filter: blur(2px);
+        }
+
+        /* コンテンツ配置 */
+        .container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 900px;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            border-radius: 25px;
-            padding: 20px;
-            border: 3px solid var(--white);
-            box-shadow: 0 10px 30px var(--shadow);
-        }
-
-        .title-area {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        h1 {
-            color: var(--pink-main);
-            font-size: 2.2em;
-            margin: 0;
-            text-shadow: 2px 2px white;
-        }
-
-        /* ── ツールバー（2枚目の写真の再現） ── */
-        .toolbar {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            border: none;
-            border-radius: 15px;
-            padding: 8px 15px;
-            font-family: inherit;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
-        }
-
-        .btn:active { transform: translateY(3px); box-shadow: none; }
-        .btn-save { background: #ff85c8; color: white; }
-        .btn-load { background: #ffcc00; color: white; }
-        .btn-csv { background: #ff9966; color: white; }
-        .btn-clear { background: #cccccc; color: white; }
-
-        /* ── 数式バー（2枚目の写真の再現） ── */
-        .formula-bar {
-            display: flex;
-            align-items: center;
-            background: white;
-            border: 2px solid var(--pink-light);
-            border-radius: 12px;
-            padding: 5px 10px;
-            margin-bottom: 15px;
-        }
-
-        .cell-id {
-            color: var(--pink-main);
-            font-weight: bold;
-            padding-right: 10px;
-            border-right: 2px solid var(--pink-light);
-            min-width: 40px;
-            text-align: center;
-        }
-
-        .fx-icon {
-            padding: 0 10px;
-            font-style: italic;
-            color: #aaa;
-        }
-
-        .formula-input {
-            flex: 1;
-            border: none;
-            outline: none;
-            font-size: 16px;
-            font-family: inherit;
-        }
-
-        /* ── テーブル部分 ── */
-        .table-wrap {
-            overflow: auto;
-            max-height: 450px;
-            border-radius: 15px;
-            border: 2px solid var(--pink-light);
-        }
-
-        table {
-            border-collapse: collapse;
-            background: white;
-            width: 100%;
-        }
-
-        th {
-            background: var(--pink-light);
-            color: var(--pink-main);
-            padding: 10px;
-            border: 1px solid #fff;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        td {
-            border: 1px solid var(--pink-light);
-            width: 80px;
-            height: 30px;
-            text-align: center;
+            height: 100vh;
+            justify-content: space-between;
             position: relative;
         }
 
-        .cell-selected {
-            outline: 3px solid var(--pink-main);
-            outline-offset: -3px;
-            background: #fff9fc;
+        /* トップ画像エリア */
+        .top-image-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
         }
 
-        .row-header {
-            background: var(--pink-light);
+        .top-image {
+            width: 100%;
+            border-radius: 15px;
+            display: block;
+        }
+
+        /* タイトル: Pink Bubble Text */
+        .title {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ff69b4;
+            font-size: 4rem;
             font-weight: bold;
-            width: 40px;
+            text-shadow: 
+                3px 3px 0px #fff, 
+                -3px -3px 0px #fff, 
+                3px -3px 0px #fff, 
+                -3px 3px 0px #fff,
+                5px 5px 15px rgba(255, 105, 180, 0.5);
+            font-family: 'Comic Sans MS', 'Arial', sans-serif; /* Fancy感を出すため */
+            white-space: nowrap;
+            pointer-events: none;
         }
 
-        input.cell-edit {
+        /* ボタンエリア */
+        .button-group {
+            display: flex;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        .btn {
+            background-color: #28a745;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+            animation: pulse 2s infinite;
+        }
+
+        .btn:hover {
+            transform: scale(1.1) rotate(2deg);
+            background-color: #218838;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(40, 167, 69, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+        }
+
+        /* フッター */
+        footer {
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        /* 画像ビューア（オーバーレイ） */
+        #viewer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            border: none;
-            outline: none;
-            text-align: center;
-            background: #fff0f7;
-            font-family: inherit;
+            background: rgba(0,0,0,0.9);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
         }
 
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            background: var(--pink-main);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            display: none;
-            animation: fadeIn 0.3s;
+        .viewer-content {
+            display: flex;
+            overflow-x: auto;
+            width: 90%;
+            padding: 20px;
+            gap: 20px;
+            scroll-snap-type: x mandatory;
         }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .viewer-item {
+            flex: 0 0 auto;
+            scroll-snap-align: center;
+            text-align: center;
+            color: white;
+        }
+
+        .viewer-item img {
+            max-height: 60vh;
+            border: 5px solid white;
+            border-radius: 10px;
+        }
+
+        .caption {
+            margin-top: 15px;
+            font-style: italic;
+            font-size: 1.2rem;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: red;
+            color: white;
+            border: none;
+            font-size: 2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 110;
+        }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        <div class="title-area">
-            <h1>🎀 miyusheet 🎀</h1>
-            <div style="font-size: 0.8em; color: #ff85c8;">✦ かわいいスプレッドシート ✦</div>
+    <div class="background-sun"></div>
+
+    <div class="container">
+        <div class="top-image-container">
+            <img src="https://raw.githubusercontent.com/miyuvinny/photos/main/pic1.jpg.jpg" alt="Top Image" class="top-image">
+            <div class="title">Miyu Power</div>
         </div>
 
-        <div id="root"></div>
+        <div class="button-group">
+            <a href="https://hirakatajin.com" target="_blank" class="btn">hirakatajin.com</a>
+            <a href="https://smilehirakata.com" target="_blank" class="btn">Smile</a>
+            <button class="btn" onclick="openViewer()">my pics</button>
+        </div>
+
+        <footer>👸🏻I am Miyu - this is my test site</footer>
     </div>
 
-    <div id="toast" class="toast">✨ 保存完了 ✨</div>
+    <div id="viewer">
+        <button class="close-btn" onclick="closeViewer()">X</button>
+        <div class="viewer-content">
+            <div class="viewer-item">
+                <img src="https://raw.githubusercontent.com/miyuvinny/photos/main/pic1.jpg.jpg" alt="Pic 1">
+                <p class="caption">まずは基本の1枚！パワーがみなぎっています。</p>
+            </div>
+            <div class="viewer-item">
+                <img src="https://raw.githubusercontent.com/miyuvinny/photos/main/pic2.jpg" alt="Pic 2">
+                <p class="caption">2枚目は秘密のオフショット…かもしれません。</p>
+            </div>
+            <div class="viewer-item">
+                <img src="https://raw.githubusercontent.com/miyuvinny/photos/main/pic3.jpg" alt="Pic 3">
+                <p class="caption">ラストを飾るのはこの1枚！笑顔になれますように。</p>
+            </div>
+        </div>
+    </div>
 
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
-
-        function SpreadsheetApp() {
-            const ROWS = 20;
-            const COLS = 10;
-            const COL_LABELS = Array.from({length: COLS}, (_, i) => String.fromCharCode(65 + i));
-            const STORAGE_KEY = 'miyusheet_pro_data';
-
-            // データの初期化（保存があれば読み込む）
-            const [data, setData] = useState(() => {
-                const saved = localStorage.getItem(STORAGE_KEY);
-                return saved ? JSON.parse(saved) : Array.from({length: ROWS}, () => Array(COLS).fill(""));
-            });
-
-            const [selected, setSelected] = useState({ r: 0, c: 0 });
-            const [isEditing, setIsEditing] = useState(false);
-
-            // トースト表示
-            const showToast = (msg) => {
-                const t = document.getElementById('toast');
-                t.textContent = msg;
-                t.style.display = 'block';
-                setTimeout(() => t.style.display = 'none', 2000);
-            };
-
-            // セル更新処理
-            const updateData = (val) => {
-                const newData = [...data];
-                newData[selected.r][selected.c] = val;
-                setData(newData);
-            };
-
-            // 手動保存
-            const handleSave = () => {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-                showToast("💾 保存しました！");
-            };
-
-            // CSV出力
-            const handleExport = () => {
-                const csvContent = data.map(r => r.join(",")).join("\n");
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement("a");
-                link.href = URL.createObjectURL(blob);
-                link.download = "miyusheet.csv";
-                link.click();
-                showToast("📤 CSVを出力しました");
-            };
-
-            // クリア
-            const handleClear = () => {
-                if(confirm("すべて消去しますか？")) {
-                    setData(Array.from({length: ROWS}, () => Array(COLS).fill("")));
-                    showToast("🗑 クリアしました");
-                }
-            };
-
-            return (
-                <div>
-                    {/* ツールバー */}
-                    <div className="toolbar">
-                        <button className="btn btn-save" onClick={handleSave}>💾 保存</button>
-                        <button className="btn btn-load" onClick={() => showToast("📂 読み込み完了")}>📂 読込</button>
-                        <button className="btn btn-csv" onClick={handleExport}>📤 CSV</button>
-                        <button className="btn btn-clear" onClick={handleClear}>🗑 クリア</button>
-                    </div>
-
-                    {/* 数式バー */}
-                    <div className="formula-bar">
-                        <div className="cell-id">{COL_LABELS[selected.c]}{selected.r + 1}</div>
-                        <div className="fx-icon">fx</div>
-                        <input 
-                            className="formula-input" 
-                            value={data[selected.r][selected.c]} 
-                            onChange={(e) => updateData(e.target.value)}
-                            placeholder="値を入力..."
-                        />
-                    </div>
-
-                    {/* テーブル本体 */}
-                    <div className="table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>♡</th>
-                                    {COL_LABELS.map(l => <th key={l}>{l}</th>)}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {data.map((row, r) => (
-                                    <tr key={r}>
-                                        <td className="row-header">{r + 1}</td>
-                                        {row.map((cell, c) => (
-                                            <td 
-                                                key={c}
-                                                className={selected.r === r && selected.c === c ? 'cell-selected' : ''}
-                                                onClick={() => { setSelected({r, c}); setIsEditing(false); }}
-                                                onDoubleClick={() => setIsEditing(true)}
-                                            >
-                                                {isEditing && selected.r === r && selected.c === c ? (
-                                                    <input 
-                                                        className="cell-edit"
-                                                        autoFocus
-                                                        value={cell}
-                                                        onChange={(e) => updateData(e.target.value)}
-                                                        onBlur={() => setIsEditing(false)}
-                                                    />
-                                                ) : cell}
-                                            </td>
-                                        ))}
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            );
+    <script>
+        function openViewer() {
+            document.getElementById('viewer').style.display = 'flex';
         }
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<SpreadsheetApp />);
+        function closeViewer() {
+            document.getElementById('viewer').style.display = 'none';
+        }
     </script>
 </body>
 </html>
+
