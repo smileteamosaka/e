@@ -1,220 +1,37 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Miyu Power</title>
-    <style>
-        /* 基本設定: スクロール禁止 */
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            overflow: hidden;
-            background-color: white;
-            font-family: 'Arial', sans-serif;
-        }
-
-        /* 固定背景: 巨大な発光する黄色の球体 */
-        .background-sun {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 70vh;
-            height: 70vh;
-            background: radial-gradient(circle, #fff700 0%, #ffcc00 50%, #ffaa00 100%);
-            border-radius: 50%;
-            z-index: -1;
-            box-shadow: 0 0 100px 40px rgba(255, 230, 0, 0.8);
-            filter: blur(2px);
-        }
-
-        /* コンテンツ配置 */
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-            justify-content: space-between;
-            position: relative;
-        }
-
-        /* トップ画像エリア */
-        .top-image-container {
-            position: relative;
-            width: 100%;
-            max-width: 800px;
-            margin-top: 20px;
-        }
-
-        .top-image {
-            width: 100%;
-            border-radius: 15px;
-            display: block;
-        }
-
-        /* タイトル: Pink Bubble Text */
-        .title {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #ff69b4;
-            font-size: 4rem;
-            font-weight: bold;
-            text-shadow: 
-                3px 3px 0px #fff, 
-                -3px -3px 0px #fff, 
-                3px -3px 0px #fff, 
-                -3px 3px 0px #fff,
-                5px 5px 15px rgba(255, 105, 180, 0.5);
-            font-family: 'Comic Sans MS', 'Arial', sans-serif; /* Fancy感を出すため */
-            white-space: nowrap;
-            pointer-events: none;
-        }
-
-        /* ボタンエリア */
-        .button-group {
-            display: flex;
-            gap: 20px;
-            z-index: 10;
-        }
-
-        .btn {
-            background-color: #28a745;
-            color: white;
-            padding: 15px 30px;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.2s;
-            animation: pulse 2s infinite;
-        }
-
-        .btn:hover {
-            transform: scale(1.1) rotate(2deg);
-            background-color: #218838;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(40, 167, 69, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
-        }
-
-        /* フッター */
-        footer {
-            font-size: 0.8rem;
-            margin-bottom: 10px;
-            color: #555;
-        }
-
-        /* 画像ビューア（オーバーレイ） */
-        #viewer {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 100;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .viewer-content {
-            display: flex;
-            overflow-x: auto;
-            width: 90%;
-            padding: 20px;
-            gap: 20px;
-            scroll-snap-type: x mandatory;
-        }
-
-        .viewer-item {
-            flex: 0 0 auto;
-            scroll-snap-align: center;
-            text-align: center;
-            color: white;
-        }
-
-        .viewer-item img {
-            max-height: 60vh;
-            border: 5px solid white;
-            border-radius: 10px;
-        }
-
-        .caption {
-            margin-top: 15px;
-            font-style: italic;
-            font-size: 1.2rem;
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: red;
-            color: white;
-            border: none;
-            font-size: 2rem;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            cursor: pointer;
-            z-index: 110;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="background-sun"></div>
-
-    <div class="container">
-        <div class="top-image-container">
-            <img src="https://raw.githubusercontent.com/miyuvinny/photos/main/pic1.jpg.jpg" alt="Top Image" class="top-image">
-            <div class="title">Miyu Power</div>
-        </div>
-
-        <div class="button-group">
-            <a href="https://hirakatajin.com" target="_blank" class="btn">hirakatajin.com</a>
-            <a href="https://smilehirakata.com" target="_blank" class="btn">Smile</a>
-            <button class="btn" onclick="openViewer()">my pics</button>
-        </div>
-
-        <footer>👸🏻I am Miyu - this is my test site</footer>
-    </div>
-
-    <div id="viewer">
-        <button class="close-btn" onclick="closeViewer()">X</button>
-        <div class="viewer-content">
-            <div class="viewer-item">
-                <img src="https://raw.githubusercontent.com/miyuvinny/photos/main/pic1.jpg.jpg" alt="Pic 1">
-                <p class="caption">まずは基本の1枚！パワーがみなぎっています。</p>
-            </div>
-            <div class="viewer-item">
-                <img src="https://raw.githubusercontent.com/miyuvinny/photos/main/pic2.jpg" alt="Pic 2">
-                <p class="caption">2枚目は秘密のオフショット…かもしれません。</p>
-            </div>
-            <div class="viewer-item">
-                <img src="https://raw.githubusercontent.com/miyuvinny/photos/main/pic3.jpg" alt="Pic 3">
-                <p class="caption">ラストを飾るのはこの1枚！笑顔になれますように。</p>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function openViewer() {
-            document.getElementById('viewer').style.display = 'flex';
-        }
-        function closeViewer() {
-            document.getElementById('viewer').style.display = 'none';
-        }
-    </script>
-</body>
-</html>
-
+<!DOCTYPE html><html lang="ja"><head>  <meta charset="UTF-8" />  <meta name="viewport" content="width=device-width, initial-scale=1.0" />  <title>Miyu Power </title>  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet" />  <style>    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {      width: 100%; height: 100%;      overflow: hidden;      background: #fff;      font-family: 'Nunito', sans-serif;    }
+    /* ─── Fixed Sun Background ─── */    .sun-bg {      position: fixed;      inset: 0;      z-index: 0;      background: #fff;      display: flex;      align-items: center;      justify-content: center;      pointer-events: none;    }
+    .sun {      width: 72vmin;      height: 72vmin;      border-radius: 50%;      background: radial-gradient(circle at 38% 36%, #fffde0 0%, #ffe033 30%, #ffb700 60%, #ff8c00 85%, #ff6600 100%);      box-shadow:        0 0 60px 20px #ffe033cc,        0 0 120px 60px #ffb70099,        0 0 220px 100px #ff880055,        0 0 350px 140px #ff440022;      animation: pulse-sun 4s ease-in-out infinite;    }
+    @keyframes pulse-sun {      0%, 100% { box-shadow: 0 0 60px 20px #ffe033cc, 0 0 120px 60px #ffb70099, 0 0 220px 100px #ff880055, 0 0 350px 140px #ff440022; transform: scale(1); }      50% { box-shadow: 0 0 80px 30px #ffe033ee, 0 0 160px 80px #ffb700bb, 0 0 280px 130px #ff880077, 0 0 420px 170px #ff440033; transform: scale(1.03); }    }
+    /* ─── Page Layout ─── */    .page {      position: relative;      z-index: 1;      width: 100%;      height: 100vh;      display: flex;      flex-direction: column;      align-items: center;      justify-content: space-between;      padding: 0 0 18px 0;    }
+    /* ─── Hero Image ─── */    .hero-wrap {      position: relative;      width: 100%;      height: 42vh;      flex-shrink: 0;      overflow: hidden;    }
+    .hero-img {      width: 100%;      height: 100%;      object-fit: cover;      object-position: top center;      display: block;    }
+    /* ─── Bubble Title ─── */    .bubble-title {      position: absolute;      bottom: 10px;      left: 50%;      transform: translateX(-50%);      font-family: 'Pacifico', cursive;      font-size: clamp(2rem, 6vw, 3.8rem);      color: #ff69b4;      text-shadow:        0 0 8px #fff,        3px 3px 0 #ff1493,        -2px -2px 0 #ffb6c1,        0 0 20px #ff69b4cc,        0 0 40px #ff1493aa;      letter-spacing: 2px;      white-space: nowrap;      paint-order: stroke fill;      -webkit-text-stroke: 2px #ff1493;      filter: drop-shadow(0 2px 12px #ff69b488);      animation: float-title 3s ease-in-out infinite;    }
+    @keyframes float-title {      0%, 100% { transform: translateX(-50%) translateY(0); }      50% { transform: translateX(-50%) translateY(-5px); }    }
+    /* ─── Buttons ─── */    .btn-row {      display: flex;      gap: 18px;      justify-content: center;      align-items: center;      flex-shrink: 0;    }
+    .btn {      padding: 14px 32px;      min-width: 160px;      border: none;      border-radius: 50px;      background: linear-gradient(135deg, #2ecc71 0%, #27ae60 50%, #1e8449 100%);      color: #fff;      font-family: 'Nunito', sans-serif;      font-size: 1.05rem;      font-weight: 900;      letter-spacing: 1px;      cursor: pointer;      box-shadow: 0 4px 20px #2ecc7155, 0 2px 8px #1e844988;      animation: btn-pulse 2s ease-in-out infinite;      transition: transform 0.18s cubic-bezier(.34,1.56,.64,1), box-shadow 0.18s;      text-decoration: none;      display: inline-flex;      align-items: center;      justify-content: center;    }
+    @keyframes btn-pulse {      0%, 100% { box-shadow: 0 4px 20px #2ecc7155, 0 2px 8px #1e844988; }      50% { box-shadow: 0 4px 36px #2ecc71aa, 0 2px 18px #1e8449bb; }    }
+    .btn:hover {      transform: scale(1.12) translateY(-4px);      box-shadow: 0 8px 40px #2ecc71bb, 0 4px 20px #1e8449cc;      animation: none;    }
+    .btn:active { transform: scale(0.97); }
+    /* ─── Footer ─── */    .footer {      font-size: 0.78rem;      color: #888;      letter-spacing: 1px;      text-align: center;    }
+    /* ─── Image Viewer Overlay ─── */    .viewer-overlay {      position: fixed;      inset: 0;      z-index: 100;      background: rgba(0,0,0,0.82);      display: none;      flex-direction: column;      align-items: center;      justify-content: center;    }
+    .viewer-overlay.open { display: flex; }
+    .viewer-close {      position: absolute;      top: 18px; left: 22px;      background: #e74c3c;      color: #fff;      border: none;      border-radius: 50%;      width: 42px; height: 42px;      font-size: 1.4rem;      font-weight: 900;      cursor: pointer;      line-height: 1;      box-shadow: 0 2px 12px #e74c3c88;      transition: transform 0.15s, background 0.15s;    }    .viewer-close:hover { background: #c0392b; transform: scale(1.15); }
+    .viewer-track-wrap {      width: 90vw;      overflow-x: auto;      overflow-y: hidden;      cursor: grab;      scroll-snap-type: x mandatory;      -webkit-overflow-scrolling: touch;      padding-bottom: 8px;    }    .viewer-track-wrap:active { cursor: grabbing; }
+    .viewer-track {      display: flex;      gap: 28px;      padding: 10px 40px;      width: max-content;      align-items: flex-start;    }
+    .viewer-card {      scroll-snap-align: center;      display: flex;      flex-direction: column;      align-items: center;      gap: 12px;      background: rgba(255,255,255,0.07);      border-radius: 18px;      padding: 16px;      backdrop-filter: blur(4px);      border: 1px solid rgba(255,255,255,0.12);    }
+    .viewer-card img {      height: 54vh;      max-width: 82vw;      object-fit: cover;      border-radius: 12px;      box-shadow: 0 8px 32px rgba(0,0,0,0.5);      display: block;    }
+    .viewer-caption {      color: #fff;      font-size: 0.92rem;      font-weight: 700;      text-align: center;      letter-spacing: 0.5px;      max-width: 300px;      text-shadow: 0 1px 6px rgba(0,0,0,0.7);    }
+    .viewer-hint {      color: rgba(255,255,255,0.45);      font-size: 0.78rem;      margin-top: 10px;    }
+    /* ─── Scrollbar style ─── */    .viewer-track-wrap::-webkit-scrollbar { height: 5px; }    .viewer-track-wrap::-webkit-scrollbar-track { background: rgba(255,255,255,0.08); border-radius: 10px; }    .viewer-track-wrap::-webkit-scrollbar-thumb { background: #ff69b488; border-radius: 10px; }  </style></head><body>
+  <!-- Fixed Sun -->  <div class="sun-bg"><div class="sun"></div></div>
+  <!-- Page -->  <div class="page">
+    <!-- Hero -->    <div class="hero-wrap">      <img class="hero-img"           src="https://raw.githubusercontent.com/miyuvinny/photos/main/pic1.jpg.jpg"           alt="Miyu" />      <div class="bubble-title"> Miyu Power </div>    </div>
+    <!-- Buttons -->    <div class="btn-row">      <a class="btn" href="https://hirakatajin.com" target="_blank" rel="noopener">hirakatajin.com</a>      <a class="btn" href="https://smilehirakata.com" target="_blank" rel="noopener">Smile</a>      <button class="btn" onclick="openViewer()">my pics</button>    </div>
+    <!-- Footer -->    <div class="footer"> I am Miyu — this is my test site</div>
+  </div>
+  <!-- Image Viewer Overlay -->  <div class="viewer-overlay" id="viewer">    <button class="viewer-close" onclick="closeViewer()">✕</button>    <div class="viewer-track-wrap" id="trackWrap">      <div class="viewer-track">        <div class="viewer-card">          <img src="https://raw.githubusercontent.com/miyuvinny/photos/main/pic1.jpg.jpg" alt="pic1" />          <div class="viewer-caption"> The legend herself, spotted in the wild. Camera nearly overloaded from sheer radiance.</div>        </div>        <div class="viewer-card">          <img src="https://raw.githubusercontent.com/miyuvinny/photos/main/pic2.jpg" alt="pic2" />          <div class="viewer-caption"> Scientists are still trying to explain this level of cuteness. Ongoing research.</div>        </div>        <div class="viewer-card">          <img src="https://raw.githubusercontent.com/miyuvinny/photos/main/pic3.jpg" alt="pic3" />          <div class="viewer-caption"> When Miyu smiles, the sun gets a little jealous. True story.</div>        </div>      </div>    </div>    <div class="viewer-hint">← スワイプ / ドラッグで横スクロール →</div>  </div>
+  <script>    function openViewer() {      document.getElementById('viewer').classList.add('open');    }    function closeViewer() {      document.getElementById('viewer').classList.remove('open');    }
+    // Drag-to-scroll    const wrap = document.getElementById('trackWrap');    let isDown = false, startX, scrollLeft;    wrap.addEventListener('mousedown', e => {      isDown = true; wrap.style.cursor = 'grabbing';      startX = e.pageX - wrap.offsetLeft;      scrollLeft = wrap.scrollLeft;    });    wrap.addEventListener('mouseleave', () => { isDown = false; wrap.style.cursor = 'grab'; });    wrap.addEventListener('mouseup', () => { isDown = false; wrap.style.cursor = 'grab'; });    wrap.addEventListener('mousemove', e => {      if (!isDown) return;      e.preventDefault();      const x = e.pageX - wrap.offsetLeft;      wrap.scrollLeft = scrollLeft - (x - startX) * 1.2;    });
+    // Close on overlay click (not on card)    document.getElementById('viewer').addEventListener('click', e => {      if (e.target === document.getElementById('viewer')) closeViewer();    });  </script>
+</body></html>
