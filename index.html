@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Miyuu Power - Classic Edition</title>
+    <title>Miyuu Power - Classic Original Edition</title>
     <style>
         /* --- 全体・背景設定 --- */
         html, body {
@@ -12,9 +12,7 @@
             height: 100vh;
             width: 100vw;
             overflow: hidden; /* 全体スクロール禁止 */
-            /* 背景: ご提示画像のようなヴィンテージなクリーム色 */
-            background-color: #f7f4ed; 
-            /* フォント: エレガントなセリフ体に変更 */
+            background-color: #f7f4ed; /* ヴィンテージクリーム */
             font-family: 'Playfair Display', 'Georgia', serif;
             color: #333;
             -webkit-font-smoothing: antialiased;
@@ -45,49 +43,46 @@
             align-items: center;
             position: relative;
             z-index: 1;
-            padding-top: 20px;
+            padding-top: 10px; /* 余白調整 */
             box-sizing: border-box;
         }
 
-        /* --- トップ画像エリア --- */
+        /* --- トップ画像エリア（オリジナルサイズ維持） --- */
         .top-image-container {
             position: relative;
             width: 90%;
-            max-width: 380px;
-            aspect-ratio: 16 / 9;
-            background-color: #f2efe6;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+            max-width: 450px; /* スマホで見やすい最大幅 */
+            /* aspect-ratioを削除し、画像の高さに合わせる */
+            margin-bottom: 20px;
         }
 
         .top-image {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto; /* オリジナルの比率で表示 */
             display: block;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         /* --- タイトル: Miyuu Power --- */
         .title {
             position: absolute;
-            bottom: 5px;
+            bottom: -15px; /* 画像のすぐ下、少し重なる位置に配置 */
             left: 50%;
             transform: translateX(-50%);
             color: #ff69b4;
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             font-weight: bold;
             text-align: center;
-            /* バブル文字風の縁取りと、強力なピンクの発光 */
             text-shadow: 
-                3px 3px 0px #fff, 
-                -3px -3px 0px #fff, 
-                3px -3px 0px #fff, 
-                -3px 3px 0px #fff,
-                0 0 25px rgba(255, 105, 180, 0.9);
-            font-family: 'Arial Rounded MT Bold', sans-serif; /* タイトルはバブル感を優先 */
+                2px 2px 0px #fff, 
+                -2px -2px 0px #fff, 
+                2px -2px 0px #fff, 
+                -2px 2px 0px #fff,
+                0 0 20px rgba(255, 105, 180, 0.8);
+            font-family: 'Arial Rounded MT Bold', sans-serif;
             white-space: nowrap;
+            z-index: 2;
             pointer-events: none;
         }
 
@@ -95,10 +90,10 @@
         .button-group {
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            width: 80%;
-            max-width: 280px;
-            margin-top: auto;
+            gap: 12px;
+            width: 75%;
+            max-width: 260px;
+            margin-top: 25px; /* タイトルとの間隔 */
             margin-bottom: auto;
             align-items: center;
         }
@@ -107,45 +102,40 @@
             background-color: #28a745;
             color: white;
             width: 100%;
-            padding: 16px 0;
+            padding: 14px 0;
             text-decoration: none;
             border-radius: 40px;
             font-weight: bold;
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             border: none;
             cursor: pointer;
             text-align: center;
             transition: all 0.3s;
             animation: pulse 2s infinite;
-            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
             display: block;
             box-sizing: border-box;
-            /* フォントをセリフ体に */
             font-family: 'Playfair Display', serif;
         }
 
         .btn:hover {
             background-color: #218838;
             transform: scale(1.03);
-            box-shadow: 0 6px 15px rgba(40, 167, 69, 0.5);
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3); }
-            50% { transform: scale(1.03); box-shadow: 0 4px 20px rgba(40, 167, 69, 0.5); }
-            100% { transform: scale(1); box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3); }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
         }
 
         /* --- フッター --- */
         footer {
-            font-size: 0.8rem;
-            /* フッターの文字をご提示画像のような深い赤色に */
-            color: #b01a1a; 
-            padding-bottom: 20px;
+            font-size: 0.75rem;
+            color: #b01a1a; /* 深い赤 */
+            padding-bottom: 15px;
             text-align: center;
             width: 100%;
-            letter-spacing: 0.05rem;
-            /* フォントをセリフ体に */
             font-family: 'Georgia', serif;
         }
 
@@ -165,17 +155,15 @@
 
         .viewer-content {
             display: flex;
-            overflow-x: auto; /* 横スクロール有効 */
+            overflow-x: auto;
             width: 100%;
             height: 100%;
-            padding: 50px 0;
-            gap: 0;
-            scroll-snap-type: x mandatory; /* 横スナップ */
+            scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
         }
 
         .viewer-item {
-            flex: 0 0 100vw; /* 1画面に1枚 */
+            flex: 0 0 100vw;
             width: 100vw;
             height: 100%;
             scroll-snap-align: center;
@@ -184,59 +172,45 @@
             justify-content: center;
             align-items: center;
             color: white;
-            box-sizing: border-box;
             padding: 20px;
+            box-sizing: border-box;
         }
 
         .viewer-item img {
             max-width: 90%;
             max-height: 70vh;
-            border: 4px solid white;
-            border-radius: 10px;
-            box-shadow: 0 0 25px rgba(255,255,255,0.2);
+            border: 3px solid white;
+            border-radius: 5px;
             object-fit: contain;
         }
 
         .caption {
-            margin-top: 25px;
+            margin-top: 20px;
             font-style: italic;
-            font-size: 1.1rem;
+            font-size: 1rem;
             text-align: center;
-            max-width: 80%;
-            line-height: 1.5;
-            /* ビューア内の文字もセリフ体に */
             font-family: 'Playfair Display', serif;
         }
 
-        /* Xボタン (左上) */
         .close-btn {
             position: absolute;
-            top: 25px;
-            left: 25px;
-            /* Xボタンをご提示画像のような深い赤色に */
-            background: #c72c2c; 
+            top: 20px;
+            left: 20px;
+            background: #c72c2c;
             color: white;
             border: none;
-            font-size: 1.6rem;
-            width: 45px;
-            height: 45px;
+            font-size: 1.4rem;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             cursor: pointer;
             z-index: 110;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Arial', sans-serif;
             font-weight: bold;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.4);
-            transition: background 0.3s;
         }
 
-        .close-btn:hover {
-            background: #b01a1a;
-        }
-
-        /* スクロールバーを隠す (ビューア内) */
         .viewer-content::-webkit-scrollbar {
             display: none;
         }
@@ -264,7 +238,6 @@
 
     <div id="viewer">
         <button class="close-btn" onclick="closeViewer()">X</button>
-        
         <div class="viewer-content">
             <div class="viewer-item">
                 <img src="https://raw.githubusercontent.com/miyuvinny/photos/main/pic1.jpg.jpg" alt="Pic1">
@@ -282,11 +255,9 @@
     </div>
 
     <script>
-        // ビューアを開く関数
         function openViewer() {
             document.getElementById('viewer').style.display = 'flex';
         }
-        // ビューアを閉じる関数
         function closeViewer() {
             document.getElementById('viewer').style.display = 'none';
         }
