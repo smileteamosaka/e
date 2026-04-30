@@ -3,99 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Miyuu Power</title>
+    <title>Miyuu Power - Classic Edition</title>
     <style>
-        /* 基本設定: 全体スクロール禁止 */
+        /* --- 全体・背景設定 --- */
         html, body {
             margin: 0;
             padding: 0;
             height: 100vh;
             width: 100vw;
-            overflow: hidden; /* スクロールさせない */
-            background-color: white;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
+            overflow: hidden; /* 全体スクロール禁止 */
+            /* 背景: ご提示画像のようなヴィンテージなクリーム色 */
+            background-color: #f7f4ed; 
+            /* フォント: エレガントなセリフ体に変更 */
+            font-family: 'Playfair Display', 'Georgia', serif;
+            color: #333;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* 固定背景: 巨大な発光する黄色の球体 */
+        /* --- 固定背景の太陽 --- */
         .background-sun {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 80vh; /* 画面の高さ基準で大きく */
-            height: 80vh;
-            background: radial-gradient(circle, #fff700 0%, #ffcc00 40%, #ffaa00 80%, rgba(255,170,0,0) 100%);
+            width: 70vh;
+            height: 70vh;
+            background: radial-gradient(circle, #ffe680 0%, #ffcc00 50%, rgba(255,204,0,0) 100%);
             border-radius: 50%;
-            z-index: -2; /* 一番奥 */
-            box-shadow: 0 0 100px 50px rgba(255, 230, 0, 0.6);
-            filter: blur(5px); /* 少しぼかして柔らかく */
+            z-index: -2;
+            box-shadow: 0 0 80px 30px rgba(255, 230, 0, 0.4);
+            filter: blur(8px);
         }
 
-        /* メインコンテナ: 縦の配置 */
+        /* --- メインコンテナ --- */
         .container {
             display: flex;
             flex-direction: column;
             height: 100vh;
             width: 100%;
-            justify-content: flex-start; /* 上詰め */
+            justify-content: flex-start;
             align-items: center;
             position: relative;
-            z-index: 1; /* 背景より前 */
-            padding-top: 20px; /* 少し余白 */
+            z-index: 1;
+            padding-top: 20px;
             box-sizing: border-box;
         }
 
-        /* トップ画像エリア */
+        /* --- トップ画像エリア --- */
         .top-image-container {
             position: relative;
-            width: 90%; /* スマホ画面に合わせる */
-            max-width: 400px;
-            aspect-ratio: 16 / 9; /* 画像のアスペクト比を保つ */
-            background-color: rgba(255,255,255,0.5); /* 画像読み込み前用 */
-            border-radius: 15px;
+            width: 90%;
+            max-width: 380px;
+            aspect-ratio: 16 / 9;
+            background-color: #f2efe6;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
         }
 
         .top-image {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* 画像を枠いっぱいに綺麗に収める */
+            object-fit: cover;
             display: block;
         }
 
-        /* タイトル: Pink Bubble Text with Glow */
+        /* --- タイトル: Miyuu Power --- */
         .title {
             position: absolute;
-            bottom: 5px; /* 画像の下側寄り */
+            bottom: 5px;
             left: 50%;
             transform: translateX(-50%);
             color: #ff69b4;
-            font-size: 2.5rem; /* スマホ用に調整 */
+            font-size: 2.8rem;
             font-weight: bold;
             text-align: center;
-            /* バブル文字風の縁取りと、画像のような発光エフェクト */
+            /* バブル文字風の縁取りと、強力なピンクの発光 */
             text-shadow: 
-                2px 2px 0px #fff, 
-                -2px -2px 0px #fff, 
-                2px -2px 0px #fff, 
-                -2px 2px 0px #fff,
-                0 0 20px rgba(255, 105, 180, 0.9); /* ピンクの発光 */
-            font-family: 'Arial Rounded MT Bold', 'Helvetica Neue', sans-serif;
+                3px 3px 0px #fff, 
+                -3px -3px 0px #fff, 
+                3px -3px 0px #fff, 
+                -3px 3px 0px #fff,
+                0 0 25px rgba(255, 105, 180, 0.9);
+            font-family: 'Arial Rounded MT Bold', sans-serif; /* タイトルはバブル感を優先 */
             white-space: nowrap;
-            pointer-events: none; /* 下の画像クリックを邪魔しない */
+            pointer-events: none;
         }
 
-        /* 3つのボタンエリア (縦に配置) */
+        /* --- 3つのボタンエリア --- */
         .button-group {
             display: flex;
-            flex-direction: column; /* 縦並び */
-            gap: 15px; /* ボタン間の間隔 */
+            flex-direction: column;
+            gap: 20px;
             width: 80%;
-            max-width: 300px;
-            margin-top: auto; /* フッターの上に配置 */
+            max-width: 280px;
+            margin-top: auto;
             margin-bottom: auto;
             align-items: center;
         }
@@ -103,42 +106,47 @@
         .btn {
             background-color: #28a745;
             color: white;
-            width: 100%; /* 横幅いっぱい */
-            padding: 15px 0;
+            width: 100%;
+            padding: 16px 0;
             text-decoration: none;
-            border-radius: 50px;
+            border-radius: 40px;
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             border: none;
             cursor: pointer;
             text-align: center;
-            transition: background-color 0.3s;
-            animation: pulse 2s infinite; /* 常に脈動 */
-            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
+            transition: all 0.3s;
+            animation: pulse 2s infinite;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
             display: block;
             box-sizing: border-box;
+            /* フォントをセリフ体に */
+            font-family: 'Playfair Display', serif;
         }
 
-        /* ホバー時のアニメーション */
         .btn:hover {
             background-color: #218838;
-            transform: scale(1.03); /* 少しだけ大きく */
+            transform: scale(1.03);
+            box-shadow: 0 6px 15px rgba(40, 167, 69, 0.5);
         }
 
-        /* 脈動アニメーション */
         @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4); }
-            50% { transform: scale(1.02); box-shadow: 0 4px 20px rgba(40, 167, 69, 0.6); }
-            100% { transform: scale(1); box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4); }
+            0% { transform: scale(1); box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3); }
+            50% { transform: scale(1.03); box-shadow: 0 4px 20px rgba(40, 167, 69, 0.5); }
+            100% { transform: scale(1); box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3); }
         }
 
-        /* フッター: Miyuuへ修正 */
+        /* --- フッター --- */
         footer {
-            font-size: 0.75rem;
-            color: #777;
-            padding-bottom: 15px;
+            font-size: 0.8rem;
+            /* フッターの文字をご提示画像のような深い赤色に */
+            color: #b01a1a; 
+            padding-bottom: 20px;
             text-align: center;
             width: 100%;
+            letter-spacing: 0.05rem;
+            /* フォントをセリフ体に */
+            font-family: 'Georgia', serif;
         }
 
         /* --- 画像ビューア（オーバーレイ） --- */
@@ -149,7 +157,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.95); /* より暗く */
+            background: rgba(0,0,0,0.95);
             z-index: 100;
             justify-content: center;
             align-items: center;
@@ -160,10 +168,10 @@
             overflow-x: auto; /* 横スクロール有効 */
             width: 100%;
             height: 100%;
-            padding: 40px 0;
-            gap: 0; /* 隙間なしでスナップさせる */
+            padding: 50px 0;
+            gap: 0;
             scroll-snap-type: x mandatory; /* 横スナップ */
-            -webkit-overflow-scrolling: touch; /* iOSでのスムーズなスクロール */
+            -webkit-overflow-scrolling: touch;
         }
 
         .viewer-item {
@@ -182,42 +190,50 @@
 
         .viewer-item img {
             max-width: 90%;
-            max-height: 70vh; /* 高さ制限 */
+            max-height: 70vh;
             border: 4px solid white;
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(255,255,255,0.3);
+            box-shadow: 0 0 25px rgba(255,255,255,0.2);
             object-fit: contain;
         }
 
         .caption {
-            margin-top: 20px;
+            margin-top: 25px;
             font-style: italic;
-            font-size: 1rem;
+            font-size: 1.1rem;
             text-align: center;
             max-width: 80%;
-            line-height: 1.4;
+            line-height: 1.5;
+            /* ビューア内の文字もセリフ体に */
+            font-family: 'Playfair Display', serif;
         }
 
         /* Xボタン (左上) */
         .close-btn {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            background: #ff4444; /* 明るい赤 */
+            top: 25px;
+            left: 25px;
+            /* Xボタンをご提示画像のような深い赤色に */
+            background: #c72c2c; 
             color: white;
             border: none;
-            font-size: 1.5rem;
-            width: 40px;
-            height: 40px;
+            font-size: 1.6rem;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             cursor: pointer;
             z-index: 110;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             font-weight: bold;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+            transition: background 0.3s;
+        }
+
+        .close-btn:hover {
+            background: #b01a1a;
         }
 
         /* スクロールバーを隠す (ビューア内) */
@@ -225,6 +241,7 @@
             display: none;
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -232,7 +249,7 @@
 
     <div class="container">
         <div class="top-image-container">
-            <img src="https://raw.githubusercontent.com/miyuvinny/photos/main/pic1.jpg.jpg" alt="Pic1" class="top-image" onerror="this.style.display='none'; this.nextElementSibling.style.color='#333';">
+            <img src="https://raw.githubusercontent.com/miyuvinny/photos/main/pic1.jpg.jpg" alt="Pic1" class="top-image">
             <div class="title">Miyuu Power</div>
         </div>
 
@@ -254,12 +271,12 @@
                 <p class="caption">まずは基本の1枚！<br>ここから全てが始まります。</p>
             </div>
             <div class="viewer-item">
-                <img src="https://raw.githubusercontent.com/miyuvinny/photos/main/pic2.jpg" alt="Pic2">
-                <p class="caption">2枚目は秘密のオフショット。<br>ちょっとリラックスモードです。</p>
+                <img src="https://raw.githubusercontent.com/miyuvinny/photos/main/pic2.jpg.jpg" alt="Pic2">
+                <p class="caption">2枚目は秘密のオフショット。<br>リラックスした表情です。</p>
             </div>
             <div class="viewer-item">
-                <img src="https://raw.githubusercontent.com/miyuvinny/photos/main/pic3.jpg" alt="Pic3">
-                <p class="caption">ラストを飾るのはこの笑顔！<br>みんなにパワーを届けます！</p>
+                <img src="https://raw.githubusercontent.com/miyuvinny/photos/main/pic3.jpg.jpg" alt="Pic3">
+                <p class="caption">ラストはこの1枚！<br>みんなにパワーを届けます。</p>
             </div>
         </div>
     </div>
@@ -276,4 +293,3 @@
     </script>
 </body>
 </html>
-
